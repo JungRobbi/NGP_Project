@@ -75,7 +75,7 @@ StyleCopReport.xml
 *_h.h
 *.ilk
 *.meta
-*.obj
+
 *.iobj
 *.pch
 *.pdb
@@ -86,6 +86,7 @@ StyleCopReport.xml
 *.sbr
 *.tlb
 *.tli
+*.obj
 *.tlh
 *.tmp
 *.tmp_proj
