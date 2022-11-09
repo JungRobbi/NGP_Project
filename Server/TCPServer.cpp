@@ -1,7 +1,15 @@
 #include "Common.h"
+#include "GameData.h"
 
 #define SERVERPORT 9000
 #define BUFSIZE    1024
+
+
+DWORD WINAPI ClientThread(LPVOID arg)
+{
+
+}
+
 
 int main(int argc, char* argv[])
 {
@@ -36,7 +44,7 @@ int main(int argc, char* argv[])
 	int addrlen;
 	int len;
 	char buf[BUFSIZE + 1];
-
+	HANDLE hThread;
 	while (1) {
 		// accept()
 		addrlen = sizeof(clientaddr);
@@ -51,56 +59,8 @@ int main(int argc, char* argv[])
 		printf("\n[TCP 서버] 클라이언트 접속: IP 주소=%s, 포트 번호=%d\n",
 			addr, ntohs(clientaddr.sin_port));
 
-
-		while (1) {
-			// 파일 이름 크기 받기
-			retval = recv(client_sock, (char*)&len, sizeof(int), MSG_WAITALL);
-			if (retval == SOCKET_ERROR) {
-				err_display("recv()");
-				break;
-			}
-			else if (retval == 0)
-				break;
-			char* filename = new char[len + 1];
-			// 파일 이름 받기
-			retval = recv(client_sock, filename, len, MSG_WAITALL);
-			if (retval == SOCKET_ERROR) {
-				err_display("recv()");
-				break;
-			}
-			else if (retval == 0)
-				break;
-			filename[retval] = '\0';
-			//받은 파일 이름의 파일 생성 및 열기
-			file = fopen(filename, "wb");
-			// 파일 크기 받기
-			retval = recv(client_sock, (char*)&filesize, sizeof(size_t), 0);
-			if (retval == SOCKET_ERROR) {
-				// 잘못 받으면 파일 닫기
-				err_display("recv()");
-				fclose(file);
-				break;
-			}
-			// 파일 받기
-			while (true) {
-				retval = recv(client_sock, buf, BUFSIZE, 0);
-				if (retval == SOCKET_ERROR) {
-					err_display("recv()");
-					break;
-				}
-				if (retval == 0) {
-					// 전송이 모두 끝나고 정상 종료시 진행상황 표시 후 빠져나가기
-					printf("%zd byte/%zd byte %.0f %% \n", recvsize, filesize, (float)recvsize / (float)filesize * 100.0);
-					break;
-				}
-				recvsize += retval;
-				fwrite(buf, sizeof(char), retval, file);
-				printf("%zd byte/%zd byte %.0f %% \r", recvsize, filesize, (float)recvsize / (float)filesize * 100.0);
-			}
-			fclose(file);
-			recvsize = 0;
-		}
-
+		
+		hThread = CreateThread(NULL, 0, ClientThread, (LPVOID)client_sock, 0, NULL);
 
 		closesocket(client_sock);
 
