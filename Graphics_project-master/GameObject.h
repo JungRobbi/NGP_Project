@@ -18,6 +18,7 @@ public:
 	unsigned int modelLocation;
 
 	int num_index;
+	int obj_num=-1;
 
 	GLint VAO;
 	GLint texture;

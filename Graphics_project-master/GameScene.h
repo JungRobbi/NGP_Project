@@ -20,6 +20,8 @@ public:
 	unsigned int viewLocation;
 	unsigned int projLocation;
 
+	int obj_number = 0;
+
 public:
 	GameScene();
 	GameScene(int);

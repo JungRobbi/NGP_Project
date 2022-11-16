@@ -683,6 +683,8 @@ GameObject* GameScene::CreateAirBox(int* index_list, GLuint* tex, GLuint* vao) /
 	box->num_index = index_list[0]; // load() 첫 번째
 	box->VAO = vao[0]; // 사각형 메쉬
 	box->texture = tex[3]; // 1번 텍스쳐
+	box->obj_num = obj_number;
+	obj_number++;
 
 	return box;
 }
@@ -727,6 +729,9 @@ GameObject* GameScene::CreateStar(int* index_list, GLuint* tex, GLuint* vao) // 
 	star->VAO = vao[1]; // 사각형 메쉬
 	star->texture = tex[2]; // 1번 텍스쳐
 
+	star->obj_num = obj_number;
+	obj_number++;
+
 	return star;
 }
 
@@ -747,6 +752,9 @@ GameObject* GameScene::CreateItem_Pickaxe(int* index_list, GLuint* tex, GLuint* 
 	axe->VAO = vao[Pickaxe]; // 메쉬
 	axe->texture = tex[2]; // 텍스쳐
 
+	axe->obj_num = obj_number;
+	obj_number++;
+
 	return axe;
 }
 
@@ -766,6 +774,9 @@ GameObject* GameScene::CreateItem_Shoes(int* index_list, GLuint* tex, GLuint* va
 	shoes->num_index = index_list[Shoes]; // load()
 	shoes->VAO = vao[Shoes]; // 메쉬
 	shoes->texture = tex[2]; // 텍스쳐
+
+	shoes->obj_num = obj_number;
+	obj_number++;
 
 	return shoes;
 }
