@@ -11,6 +11,7 @@ uniform vec3 lightPos;
 uniform vec3 lightColor;
 uniform sampler2D outTex;
 uniform float alpha;
+uniform vec3 color;
 
 out vec4 fColor;
 
@@ -41,6 +42,6 @@ void main ()
      fColor = vec4((result),10);
   }
   
-  fColor = texture(outTex, Tex) * fColor;
+  fColor = texture(outTex, Tex) * fColor * color;
 
 }
