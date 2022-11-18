@@ -1,5 +1,9 @@
 #pragma once
-enum MSG
+#define _CRT_SECURE_NO_WARNINGS
+#include <queue>
+
+
+enum GAMEMSG
 {
 	MSG_PLAYER_INFO_LOBBY,
 	MSG_PLAYER_INFO_SCENE,
@@ -8,7 +12,7 @@ enum MSG
 	MSG_COLLIDE,
 	MSG_LEAVE,
 	MSG_GAMECLEAR,
-	MSG_PAUSE 
+	MSG_PAUSE
 };
 
 struct Vector3
@@ -20,13 +24,17 @@ struct Vector3
 class GameData
 {
 public:
-	GameData() {}
+	GameData() { msg = -1; }
 	~GameData() {}
 protected:
 	int msg;
 private:
 
 };
+
+
+
+
 
 class PlayerInfoLobby : public GameData
 {
@@ -119,3 +127,5 @@ private:
 	bool pause;
 	char padding[44];
 };
+
+

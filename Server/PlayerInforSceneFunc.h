@@ -15,9 +15,10 @@ void sendPlayerInfoScene(SOCKET sock, PlayerInfoScene data)
 
 }
 
-void recvPlayerInfoScene(SOCKET sock)
+PlayerInfoScene recvPlayerInfoScene(SOCKET sock)
 {
 	int retval;
 	PlayerInfoScene data;
 	retval = recv(sock, (char*)&data, sizeof(data), 0);
+	return data;
 }

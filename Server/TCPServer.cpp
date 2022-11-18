@@ -5,15 +5,29 @@
 #define BUFSIZE    1024
 
 
+std::queue<GameData> MsgCommandQueue;
+
+
 DWORD WINAPI ClientThread(LPVOID arg)
 {
 	int retval;
-	char addr[INET_ADDRSTRLEN];
-	struct sockaddr_in clientaddr;
 	SOCKET client_sock = (SOCKET)arg;
+	struct sockaddr_in clientaddr;
+	char addr[INET_ADDRSTRLEN];
+	int addrlen;
+	char buf[BUFSIZE + 1];
+
+
+	addrlen = sizeof(clientaddr);
+	getpeername(client_sock, (struct sockaddr*)&clientaddr, &addrlen);
+	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
+
+
 
 	closesocket(client_sock);
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
+
+	return 0;
 }
 
 

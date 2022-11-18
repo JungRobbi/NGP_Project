@@ -32,5 +32,8 @@
     <ClInclude Include="PlayerInforSceneFunc.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="PlayerLeave.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>
