@@ -196,7 +196,7 @@ int main(int argc, char** argv)
 		mciSendCommand(dwID, MCI_PLAY, MCI_DGV_PLAY_REPEAT, (DWORD)(LPVOID)&m_mciPlayParms);
 	}
 
-	sc.emplace_back(new GameScene(1, num_shape_list, texture, VAO, s_program));
+	sc.emplace_back(new GameScene(0, num_shape_list, texture, VAO, s_program));
 
 
 	// callback functions
@@ -420,7 +420,7 @@ void Display()
 	glBindTexture(GL_TEXTURE_2D, texture[1]);
 	glDrawArrays(GL_TRIANGLES, 0, num_shape_list[3]);*/
 
-	if (Scene::scene->n_scene == 10) {
+	if (Scene::scene->n_scene == 0) {
 		Display_Sub_Lobby();
 	}
 	if (f_Light_ambients[0] < 0.3f || Scene::scene->n_scene == 7) {
@@ -478,7 +478,7 @@ void Display_Sub_Lobby()
 	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos 값 전달: (0.0, 0.0, 5.0);
 	glUniform3f(lightPosLocation, 0.0, 0.0, 0.0);
 	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor 값 전달: (1.0, 1.0, 1.0) 백색
-	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
+	glUniform3f(lightColorLocation, 0.8, 0.8, 0.8);
 	//*************************************************************************
 	// 그리기 부분
 	glViewport(0, 0, 800, 800);
@@ -775,6 +775,10 @@ void keyboard(unsigned char key2, int x, int y) {
 	}
 
 	switch (key2) {
+	case ';':
+		sc.pop_front();
+		sc.emplace_back(new GameScene(1, num_shape_list, texture, VAO, s_program));
+		break;
 	case 'r':
 		if (Scene::scene->p_player->GetComponent<Camera>()->state == FIRST_TO_TOP ||
 			Scene::scene->p_player->GetComponent<Camera>()->state == FIRST_VIEW)
