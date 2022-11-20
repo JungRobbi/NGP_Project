@@ -152,14 +152,14 @@ int main(int argc, char** argv)
 		std::cerr << "Unable to initialize GLEW ... exiting" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	else
-	{
-		std::cout << "GLEW OK\n";
-	}
 
 	//////////////////////////////////////////////////////////////////////////////////////
 	//// Create shader program an register the shader
 	//////////////////////////////////////////////////////////////////////////////////////
+
+	std::cout << std::endl << " ======== Login ======== " << std::endl << std::endl;
+	std::cout << std::endl << "사용 할 닉네임을 입력해주세요 : ";
+	std::cout << std::endl << "접속 할 서버주소를 입력해주세요 : ";
 
 	GLuint vShader[4];
 	GLuint fShader[4];
