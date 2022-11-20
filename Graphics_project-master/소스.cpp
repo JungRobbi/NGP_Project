@@ -127,6 +127,8 @@ bool start = false;
 
 std::list<Scene*> sc;
 
+int Pcolor;
+
 void SceneChange(int num_scene);
 void ResetChange();
 void NestSceneChange();
@@ -370,8 +372,9 @@ void Display()
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 	int lighAmbientLocation = glGetUniformLocation(s_program[0], "lightAmbient"); //--- lightAmbient 
 	glUniform3f(lighAmbientLocation, f_Light_ambients[0], f_Light_ambients[1], f_Light_ambients[2]);
-	int PlayerColor = glGetUniformLocation(s_program[0], "color"); //--- lightColor 값 전달: (1.0, 1.0, 1.0) 백색
-	glUniform3f(PlayerColor, 1.0, 0.0, 0.0);
+	Pcolor = glGetUniformLocation(s_program[0], "color"); //--- lightColor 값 전달: (1.0, 1.0, 1.0) 백색
+	glUniform4f(Pcolor, 0.0, 0.0, 0.0, 0.0);
+
 	//*************************************************************************
 	// 그리기 부분
 
