@@ -11,6 +11,7 @@ uniform vec3 lightPos;
 uniform vec3 lightColor;
 uniform vec3 lightAmbient;
 uniform sampler2D outTex;
+uniform vec4 color;
 
 void main()
 {
@@ -38,5 +39,5 @@ void main()
      		FragColor = vec4((result),10);
   	}
   
-	FragColor = texture(outTex,Tex)*FragColor;
+	FragColor = texture(outTex,Tex)*(FragColor+color);
 }

@@ -1,6 +1,4 @@
 #pragma once
-#include "stdafx.h"
-
 #include "Component.h"
 #include "Transform3D.h"
 #include "GameObject.h"

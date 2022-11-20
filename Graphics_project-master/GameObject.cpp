@@ -1,6 +1,8 @@
 #include "GameObject.h"
 #include "Transform3D.h"
 
+extern int Pcolor;
+
 GameObject::GameObject()
 {
 	Scene::scene->creationQueue.push(this);

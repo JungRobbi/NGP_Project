@@ -69,6 +69,7 @@ void Display_Sub_Axe2();
 void Display_Sub_Axe3();
 void Display_Sub_Shoe1();
 void Display_Sub_Shoe2();
+void Display_Sub_Lobby();
 
 void Reshape(int w, int h);
 void InitBuffer();
@@ -126,6 +127,8 @@ float msx, msy = 0;
 bool start = false;
 
 std::list<Scene*> sc;
+
+int Pcolor;
 
 void SceneChange(int num_scene);
 void ResetChange();
@@ -320,8 +323,8 @@ void InitTexture()
 		"Resource/face.png","Resource/sand.png", "Resource/skybox2_top.png", "Resource/skybox2_left.png", "Resource/skybox2_front.png", "Resource/skybox2_right.png",
 		"Resource/skybox2_back.png", "Resource/skybox2_bottom.png", "Resource/vinus.png", "Resource/mars.png", "Resource/jupiter.png", "Resource/magma2.png", "Resource/sun.png","Resource/xxx.png",
 		"Resource/green.png", "Resource/yellow.png","Resource/skybox3_top.png", "Resource/skybox3_left.png", "Resource/skybox3_front.png", "Resource/skybox3_right.png",
-		"Resource/skybox3_back.png", "Resource/skybox3_bottom.png", "Resource/Item.png","Resource/GameClear.png","Resource/axe.png","Resource/shoe.png" };
-		//20																				// ↑ 여기가 14
+		"Resource/skybox3_back.png", "Resource/skybox3_bottom.png", "Resource/Item.png","Resource/GameClear.png","Resource/axe.png","Resource/shoe.png","Resource/Robby.png"};
+		//20																				
 	glGenTextures(40, texture); //--- 텍스처 생성
 
 	for (int i = 0; i < 40; ++i) {
@@ -370,6 +373,8 @@ void Display()
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 	int lighAmbientLocation = glGetUniformLocation(s_program[0], "lightAmbient"); //--- lightAmbient 
 	glUniform3f(lighAmbientLocation, f_Light_ambients[0], f_Light_ambients[1], f_Light_ambients[2]);
+	Pcolor = glGetUniformLocation(s_program[0], "color"); //--- lightColor 값 전달: (1.0, 1.0, 1.0) 백색
+	glUniform4f(Pcolor, 0.0, 0.0, 0.0, 0.0);
 
 	//*************************************************************************
 	// 그리기 부분
@@ -415,7 +420,9 @@ void Display()
 	glBindTexture(GL_TEXTURE_2D, texture[1]);
 	glDrawArrays(GL_TRIANGLES, 0, num_shape_list[3]);*/
 
-
+	if (Scene::scene->n_scene == 10) {
+		Display_Sub_Lobby();
+	}
 	if (f_Light_ambients[0] < 0.3f || Scene::scene->n_scene == 7) {
 		Display_Sub1();
 	}
@@ -450,6 +457,39 @@ void Display()
 	glDisable(GL_BLEND); // 블렌딩 해제
 
 	glutSwapBuffers();
+}
+
+void Display_Sub_Lobby()
+{
+	// 카메라 설정
+	unsigned int modelLocation = glGetUniformLocation(s_program[0], "model");
+	unsigned int viewLocation = glGetUniformLocation(s_program[0], "view");
+	unsigned int projLocation = glGetUniformLocation(s_program[0], "projection");
+
+	glm::mat4 Vw = glm::mat4(1.0f);
+	glm::mat4 Pj = glm::mat4(1.0f);
+	Vw = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	Pj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 100.00f);
+	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &Vw[0][0]);
+	glUniformMatrix4fv(projLocation, 1, GL_FALSE, &Pj[0][0]);
+
+	//*************************************************************************
+	// 조명 설정
+	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos 값 전달: (0.0, 0.0, 5.0);
+	glUniform3f(lightPosLocation, 0.0, 0.0, 0.0);
+	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor 값 전달: (1.0, 1.0, 1.0) 백색
+	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
+	//*************************************************************************
+	// 그리기 부분
+	glViewport(0, 0, 800, 800);
+	glBindTexture(GL_TEXTURE_2D, texture[32]);
+	glBindVertexArray(VAO[Plane]);
+	TR = glm::mat4(1.0f);
+	TR = glm::translate(TR, glm::vec3(0.0f, 0.0f, -3.0f));
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(TR));
+	glDrawArrays(GL_TRIANGLES, 0, num_shape_list[Plane]);
+
+
 }
 
 void Display_Sub1()

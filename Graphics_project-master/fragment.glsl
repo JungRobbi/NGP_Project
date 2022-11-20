@@ -39,9 +39,9 @@ void main ()
      fColor = vec4((result),0.0);
   }
   else {
-     fColor = vec4((result),10);
+     fColor = vec4(1.0,0.0,1.0,1.0);
   }
   
-  fColor = texture(outTex, Tex) * fColor * color;
+  fColor = texture(outTex, Tex) * fColor * colo;
 
 }
