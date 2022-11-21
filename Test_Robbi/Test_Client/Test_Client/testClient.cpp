@@ -2,6 +2,7 @@
 #include <queue>
 
 #include "../../Common.h"
+#include "../../../Server/GameData.h"
 
 char* SERVERIP = (char*)"127.0.0.1";
 

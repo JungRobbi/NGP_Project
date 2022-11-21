@@ -2,6 +2,7 @@
 #include <queue>
 
 #include "../../Common.h"
+#include "../../../Server/GameData.h"
 
 #define SERVERPORT 9000
 #define BUFSIZE    128
