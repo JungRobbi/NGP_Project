@@ -4,6 +4,9 @@
 #include "../../Common.h"
 #include "../../../Server/GameData.h"
 
+#include "MSGFunc.h"
+#include "PlayerInfoLobbyFunc.h"
+
 char* SERVERIP = (char*)"127.0.0.1";
 
 #define SERVERPORT 9000
@@ -52,6 +55,10 @@ int main(int argc, char* argv[])
 		if (strlen(buf) == 0)
 			break;
 
+		// 메세지 보내기
+		GAMEMSG TempMSG = MSG_PLAYER_INFO_LOBBY;
+		sendMSG(sock, TempMSG);
+
 		// 데이터 보내기
 		retval = send(sock, buf, (int)strlen(buf), 0);
 		if (retval == SOCKET_ERROR) {
@@ -59,6 +66,10 @@ int main(int argc, char* argv[])
 			break;
 		}
 		printf("[TCP 클라이언트] %d바이트를 보냈습니다.\n", retval);
+
+		// 메세지 받기
+		GAMEMSG recv_msg = recvMSG(sock);
+		printf("받은 메세지 : %d\n",recv_msg);
 
 		// 데이터 받기
 		retval = recv(sock, buf, retval, MSG_WAITALL);

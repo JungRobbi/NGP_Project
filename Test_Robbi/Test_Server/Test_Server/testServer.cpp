@@ -4,6 +4,9 @@
 #include "../../Common.h"
 #include "../../../Server/GameData.h"
 
+#include "MSGFunc.h"
+#include "PlayerInfoLobbyFunc.h"
+
 #define SERVERPORT 9000
 #define BUFSIZE    128
 
@@ -25,6 +28,10 @@ DWORD WINAPI ClientThread(LPVOID arg)
 	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
 
 	while (1) {
+		// 메세지 받기
+		GAMEMSG recv_msg = recvMSG(client_sock);
+		printf("[TCP/%s:%d] %d\n", addr, ntohs(clientaddr.sin_port), recv_msg);
+
 		// 데이터 받기
 		retval = recv(client_sock, buf, BUFSIZE, 0);
 		if (retval == SOCKET_ERROR) {
@@ -37,6 +44,10 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		// 받은 데이터 출력
 		buf[retval] = '\0';
 		printf("[TCP/%s:%d] %s\n", addr, ntohs(clientaddr.sin_port), buf);
+
+		// 메세지 보내기
+		GAMEMSG TempMSG = MSG_PLAYER_INFO_LOBBY;
+		sendMSG(client_sock, TempMSG);
 
 		// 데이터 보내기
 		retval = send(client_sock, buf, retval, 0);
