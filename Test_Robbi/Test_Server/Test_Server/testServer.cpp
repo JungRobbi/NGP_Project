@@ -1,7 +1,7 @@
 #include <iostream>
 #include <queue>
 
-#include "../Common.h"
+#include "../../Common.h"
 
 #define SERVERPORT 9000
 #define BUFSIZE    128
