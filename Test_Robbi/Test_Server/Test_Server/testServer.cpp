@@ -8,10 +8,7 @@
 #define BUFSIZE    128
 
 
-template<class T>
-std::queue<T> MsgCommandQueue;
-
-
+std::queue<GameData> MsgCommandQueue;
 
 DWORD WINAPI ClientThread(LPVOID arg)
 {

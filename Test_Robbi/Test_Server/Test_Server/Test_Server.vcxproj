@@ -129,6 +129,10 @@
   <ItemGroup>
     <ClCompile Include="testServer.cpp" />
   </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="MSGFunc.h" />
+    <ClInclude Include="PlayerInfoLobbyFunc.h" />
+  </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets">
   </ImportGroup>
