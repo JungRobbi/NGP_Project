@@ -1,5 +1,7 @@
 #define  _CRT_SECURE_NO_WARNINGS
 #define STB_IMAGE_IMPLEMENTATION
+#define SERVERIP "127.0.0.1"			//로그인할 때 서버 IP받아와야함
+#define SERVERPORT 9000
 
 
 #include <vector>
@@ -34,6 +36,9 @@
 #include "Input.h"
 #include "DestroyEffect.h"
 
+
+#include "Common.h"
+#include "GameData.h"
 MCI_OPEN_PARMS m_mciOpenParms;
 MCI_PLAY_PARMS m_mciPlayParms;
 DWORD m_dwDeviceID;
@@ -118,7 +123,6 @@ float f_Light_ambients[3];
 
 BoundingBox BoundBox[10];
 
-
 glm::mat4 TR = glm::mat4(1.0f);
 
 bool key[256];
@@ -127,11 +131,24 @@ bool start = false;
 
 std::list<Scene*> sc;
 
+SOCKET sock;
+
+
 void SceneChange(int num_scene);
 void ResetChange();
 void NestSceneChange();
+DWORD WINAPI RecvThread(LPVOID temp);
+
 int main(int argc, char** argv)
 {
+
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		return 1;
+
+	CreateThread(NULL, 0, RecvThread, NULL, 0, NULL);
+
+
 	// create window using freeglut
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
@@ -895,4 +912,30 @@ void NestSceneChange()
 	}
 	sc.emplace_back(new GameScene(Scene::scene->n_scene + 1, num_shape_list, texture, VAO, s_program));
 	sc.erase(p);
+}
+
+
+DWORD WINAPI RecvThread(LPVOID temp)
+{
+	int retval;
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == INVALID_SOCKET) err_display("socket()");
+
+	struct sockaddr_in serveraddr;
+	memset(&serveraddr, 0, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	inet_pton(AF_INET, SERVERIP, &serveraddr.sin_addr);
+	serveraddr.sin_port = htons(SERVERPORT);
+	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+	if (retval == SOCKET_ERROR) err_display("connect()");
+
+	GameData Data;
+	while (1)
+	{
+		retval = recv(sock, (char*)&Data, 52, 0);
+		if (retval == SOCKET_ERROR) err_display("recv()");
+		//
+		//Data MSG큐에 넣기
+		//
+	}
 }
