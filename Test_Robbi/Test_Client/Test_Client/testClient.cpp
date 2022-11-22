@@ -10,7 +10,7 @@
 char* SERVERIP = (char*)"127.0.0.1";
 
 #define SERVERPORT 9000
-#define BUFSIZE    128
+#define BUFSIZE    50
 
 int main(int argc, char* argv[])
 {
@@ -60,30 +60,29 @@ int main(int argc, char* argv[])
 		sendMSG(sock, TempMSG);
 
 		// 데이터 보내기
-		retval = send(sock, buf, (int)strlen(buf), 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("send()");
-			break;
-		}
-		printf("[TCP 클라이언트] %d바이트를 보냈습니다.\n", retval);
-
-		// 메세지 받기
-		GAMEMSG recv_msg = recvMSG(sock);
-		printf("받은 메세지 : %d\n",recv_msg);
-
-		// 데이터 받기
-		retval = recv(sock, buf, retval, MSG_WAITALL);
-		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
-			break;
-		}
-		else if (retval == 0)
+		char* pstr = (char*)"123";
+		char pc = 'q';
+		retval = sendPlayerInfoLobby(sock, PlayerInfoLobby{ TempMSG, pstr, pc });
+		if (retval == -1)
 			break;
 
-		// 받은 데이터 출력
-		buf[retval] = '\0';
-		printf("[TCP 클라이언트] %d바이트를 받았습니다.\n", retval);
-		printf("[받은 데이터] %s\n", buf);
+		//// 메세지 받기
+		//GAMEMSG recv_msg = recvMSG(sock);
+		//printf("받은 메세지 : %d\n",recv_msg);
+
+		//// 데이터 받기
+		//retval = recv(sock, buf, retval, MSG_WAITALL);
+		//if (retval == SOCKET_ERROR) {
+		//	err_display("recv()");
+		//	break;
+		//}
+		//else if (retval == 0)
+		//	break;
+
+		//// 받은 데이터 출력
+		//buf[retval] = '\0';
+		//printf("[TCP 클라이언트] %d바이트를 받았습니다.\n", retval);
+		//printf("[받은 데이터] %s\n", buf);
 	}
 
 	// 소켓 닫기

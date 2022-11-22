@@ -1,5 +1,5 @@
 #include <iostream>
-#include <queue>
+#include <list>
 
 #include "../../Common.h"
 #include "../../../Server/GameData.h"
@@ -8,10 +8,12 @@
 #include "PlayerInfoLobbyFunc.h"
 
 #define SERVERPORT 9000
-#define BUFSIZE    128
+#define BUFSIZE    50
 
 
-std::queue<GameData> MsgCommandQueue;
+std::list<GameData*> MsgCommandQueue;
+
+CRITICAL_SECTION cs;
 
 DWORD WINAPI ClientThread(LPVOID arg)
 {
@@ -32,33 +34,94 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		GAMEMSG recv_msg = recvMSG(client_sock);
 		printf("[TCP/%s:%d] %d\n", addr, ntohs(clientaddr.sin_port), recv_msg);
 
-		// 데이터 받기
-		retval = recv(client_sock, buf, BUFSIZE, 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("recv()");
+		// 메세지 해석 -> 데이터 받기 -> 메세지 큐에 입력
+		
+		EnterCriticalSection(&cs);
+		switch (recv_msg) // 메세지 해석
+		{
+		case MSG_PLAYER_INFO_LOBBY:  // 데이터 받고 큐에 입력
+			MsgCommandQueue.emplace_back(new PlayerInfoLobby{ recvPlayerInfoLobby(client_sock) });
+			break;
+		case MSG_PLAYER_INFO_SCENE:
+			break;
+		case MSG_CHAT:
+			break;
+		case MSG_ADD_BLOCK:
+			break;
+		case MSG_COLLIDE:
+			break;
+		case MSG_LEAVE:
+			break;
+		case MSG_GAMECLEAR:
+			break;
+		case MSG_PAUSE:
+			break;
+		default:
 			break;
 		}
-		else if (retval == 0)
-			break;
+		LeaveCriticalSection(&cs);
+		
 
-		// 받은 데이터 출력
-		buf[retval] = '\0';
-		printf("[TCP/%s:%d] %s\n", addr, ntohs(clientaddr.sin_port), buf);
+		//// 받은 데이터 출력
+		//buf[retval] = '\0';
+		//printf("[TCP/%s:%d] %s\n", addr, ntohs(clientaddr.sin_port), buf);
 
-		// 메세지 보내기
-		GAMEMSG TempMSG = MSG_PLAYER_INFO_LOBBY;
-		sendMSG(client_sock, TempMSG);
+		//// 메세지 보내기
+		//GAMEMSG TempMSG = MSG_PLAYER_INFO_LOBBY;
+		//sendMSG(client_sock, TempMSG);
 
-		// 데이터 보내기
-		retval = send(client_sock, buf, retval, 0);
-		if (retval == SOCKET_ERROR) {
-			err_display("send()");
-			break;
-		}
+		//// 데이터 보내기
+		//retval = send(client_sock, buf, retval, 0);
+		//if (retval == SOCKET_ERROR) {
+		//	err_display("send()");
+		//	break;
+		//}
 	}
 
 	closesocket(client_sock);
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
+
+	return 0;
+}
+
+DWORD WINAPI Cacul_Execute(LPVOID arg)
+{
+	while (1) {
+		if (MsgCommandQueue.empty())
+			continue;
+
+		EnterCriticalSection(&cs);
+		GameData* data = MsgCommandQueue.front();
+		
+		// 데이터 처리
+
+		//std::cout << data->GetMsg() << std::endl;
+
+		/*switch (data->GetMsg())
+		{
+		case MSG_PLAYER_INFO_LOBBY:
+			break;
+		case MSG_PLAYER_INFO_SCENE:
+			break;
+		case MSG_CHAT:
+			break;
+		case MSG_ADD_BLOCK:
+			break;
+		case MSG_COLLIDE:
+			break;
+		case MSG_LEAVE:
+			break;
+		case MSG_GAMECLEAR:
+			break;
+		case MSG_PAUSE:
+			break;
+		default:
+			break;
+		}*/
+
+		MsgCommandQueue.pop_front();
+		LeaveCriticalSection(&cs);
+	}
 
 	return 0;
 }
@@ -85,12 +148,19 @@ int main(int argc, char* argv[])
 	retval = listen(listen_sock, SOMAXCONN);
 	if (retval == SOCKET_ERROR) err_quit("listen()");
 
+	InitializeCriticalSection(&cs);
+
 	SOCKET client_sock;
 	struct sockaddr_in clientaddr;
 	int addrlen;
 	int len;
 	char buf[BUFSIZE + 1];
 	HANDLE hThread;
+	HANDLE hCacul_ExecuteThread;
+
+	hCacul_ExecuteThread = CreateThread(NULL, 0, Cacul_Execute, NULL, 0, NULL);
+	CloseHandle(hCacul_ExecuteThread);
+	
 	while (1) {
 		addrlen = sizeof(clientaddr);
 		client_sock = accept(listen_sock, (struct sockaddr*)&clientaddr, &addrlen);
@@ -116,6 +186,7 @@ int main(int argc, char* argv[])
 
 	closesocket(listen_sock);
 
+	DeleteCriticalSection(&cs);
 	WSACleanup();
 	return 0;
 }
