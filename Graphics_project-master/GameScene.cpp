@@ -680,7 +680,7 @@ GameObject* GameScene::CreatePlayer(int* index_list, GLuint* tex, GLuint* vao) /
 	player->modelLocation = modelLocation;
 	player->num_index = index_list[0]; // load() 첫 번째
 	player->VAO = vao[0]; // 사각형 메쉬
-	player->texture = tex[3]; // 1번 텍스쳐
+	player->texture = tex[33];
 
 	return player;
 }
