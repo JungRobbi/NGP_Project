@@ -89,6 +89,9 @@
     <ClCompile Include="LavaMove.cpp">
       <Filter>소스 파일\GameComponents</Filter>
     </ClCompile>
+    <ClCompile Include="OtherPlayer.cpp">
+      <Filter>소스 파일\GameComponents</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FrameWork.h">
@@ -149,6 +152,9 @@
       <Filter>소스 파일\GameComponents</Filter>
     </ClInclude>
     <ClInclude Include="LavaMove.h">
+      <Filter>소스 파일\GameComponents</Filter>
+    </ClInclude>
+    <ClInclude Include="OtherPlayer.h">
       <Filter>소스 파일\GameComponents</Filter>
     </ClInclude>
   </ItemGroup>
