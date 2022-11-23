@@ -33,7 +33,7 @@ AddBlock::AddBlock(int datamsg, Vector3 pos)
 	position = pos;
 }
 
-Collide::Collide(int datamsg, int index)
+S_Collide::S_Collide(int datamsg, int index)
 {
 	msg = datamsg;
 	item_index = index;

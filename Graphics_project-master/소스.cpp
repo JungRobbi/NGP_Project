@@ -37,7 +37,6 @@
 #include "DestroyEffect.h"
 
 #include "Common.h"
-#include "GameData.h"
 
 MCI_OPEN_PARMS m_mciOpenParms;
 MCI_PLAY_PARMS m_mciPlayParms;
