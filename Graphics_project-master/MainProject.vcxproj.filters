@@ -24,7 +24,7 @@
     <Filter Include="소스 파일\GameScene">
       <UniqueIdentifier>{ade65c85-7295-41d1-a194-7c75875b536d}</UniqueIdentifier>
     </Filter>
-    <Filter Include="소스 파일\GameComponents">
+    <Filter Include="소스 파일\Framework\GameComponents">
       <UniqueIdentifier>{d1ece2fd-bd5e-4b83-aaa7-76780713d2f0}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
@@ -63,31 +63,31 @@
       <Filter>소스 파일\Framework</Filter>
     </ClCompile>
     <ClCompile Include="Transform3D.cpp">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClCompile>
     <ClCompile Include="Camera.cpp">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClCompile>
     <ClCompile Include="Collide.cpp">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClCompile>
     <ClCompile Include="PlayerJump.cpp">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClCompile>
     <ClCompile Include="Gravity.cpp">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClCompile>
     <ClCompile Include="ItemRotate.cpp">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClCompile>
     <ClCompile Include="DestroyEffect.cpp">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClCompile>
     <ClCompile Include="CannonShot.cpp">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClCompile>
     <ClCompile Include="LavaMove.cpp">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClCompile>
     <ClCompile Include="OtherPlayer.cpp">
       <Filter>소스 파일\GameComponents</Filter>
@@ -125,34 +125,34 @@
       <Filter>소스 파일\Framework</Filter>
     </ClInclude>
     <ClInclude Include="Transform3D.h">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClInclude>
     <ClInclude Include="Camera.h">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClInclude>
     <ClInclude Include="Collide.h">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClInclude>
     <ClInclude Include="PlayerJump.h">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClInclude>
     <ClInclude Include="Gravity.h">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClInclude>
     <ClInclude Include="ObjRead.h">
       <Filter>소스 파일</Filter>
     </ClInclude>
     <ClInclude Include="ItemRotate.h">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClInclude>
     <ClInclude Include="DestroyEffect.h">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClInclude>
     <ClInclude Include="CannonShot.h">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClInclude>
     <ClInclude Include="LavaMove.h">
-      <Filter>소스 파일\GameComponents</Filter>
+      <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClInclude>
     <ClInclude Include="OtherPlayer.h">
       <Filter>소스 파일\GameComponents</Filter>
