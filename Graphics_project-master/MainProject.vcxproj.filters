@@ -27,6 +27,9 @@
     <Filter Include="소스 파일\Framework\GameComponents">
       <UniqueIdentifier>{d1ece2fd-bd5e-4b83-aaa7-76780713d2f0}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Network">
+      <UniqueIdentifier>{0c44243a-b379-4010-9751-62b1a8703dff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework.cpp">
@@ -89,8 +92,8 @@
     <ClCompile Include="LavaMove.cpp">
       <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClCompile>
-    <ClCompile Include="OtherPlayer.cpp">
-      <Filter>소스 파일\GameComponents</Filter>
+    <ClCompile Include="GameData.cpp">
+      <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -154,8 +157,11 @@
     <ClInclude Include="LavaMove.h">
       <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClInclude>
-    <ClInclude Include="OtherPlayer.h">
-      <Filter>소스 파일\GameComponents</Filter>
+    <ClInclude Include="Common.h">
+      <Filter>소스 파일\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData.h">
+      <Filter>소스 파일</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

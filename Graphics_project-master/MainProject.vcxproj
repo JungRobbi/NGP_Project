@@ -141,6 +141,7 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DestroyEffect.cpp" />
     <ClCompile Include="Framework.cpp" />
+    <ClCompile Include="GameData.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -152,7 +153,6 @@
     <ClCompile Include="Input.cpp" />
     <ClCompile Include="ItemRotate.cpp" />
     <ClCompile Include="LavaMove.cpp" />
-    <ClCompile Include="OtherPlayer.cpp" />
     <ClCompile Include="Output.cpp" />
     <ClCompile Include="PlayerJump.cpp" />
     <ClCompile Include="Scene.cpp" />
@@ -171,9 +171,11 @@
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CannonShot.h" />
     <ClInclude Include="Collide.h" />
+    <ClInclude Include="Common.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DestroyEffect.h" />
     <ClInclude Include="FrameWork.h" />
+    <ClInclude Include="GameData.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameScene.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -186,7 +188,6 @@
     <ClInclude Include="ItemRotate.h" />
     <ClInclude Include="LavaMove.h" />
     <ClInclude Include="ObjRead.h" />
-    <ClInclude Include="OtherPlayer.h" />
     <ClInclude Include="Output.h" />
     <ClInclude Include="PlayerJump.h" />
     <ClInclude Include="Scene.h" />
