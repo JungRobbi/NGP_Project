@@ -1,6 +1,7 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #include <queue>
+#include "../Graphics_project-master/Vector3.h"
 
 
 enum GAMEMSG
@@ -15,17 +16,13 @@ enum GAMEMSG
 	MSG_PAUSE
 };
 
-struct Vector3
-{
-	float x;
-	float y;
-	float z;
-};
 class GameData
 {
 public:
 	GameData() { msg = -1; }
 	~GameData() {}
+
+	int GetMsg() { return msg; }
 protected:
 	int msg;
 private:
@@ -42,6 +39,10 @@ public:
 	PlayerInfoLobby() {}
 	PlayerInfoLobby(int datamsg, char* id, char ready);
 	~PlayerInfoLobby() {};
+
+	char* GetID() { return ID; }
+	char GetReady() { return ready_state; }
+
 private:
 	char ID[10];
 	char ready_state;   // 0:white 1:R 2:G 3:B
@@ -55,6 +56,7 @@ public:
 	PlayerInfoScene(int datasmg, Vector3 pos, char* id);
 	~PlayerInfoScene() {}
 
+	char* GetID() { return ID; }
 
 private:
 	Vector3 position;
@@ -69,6 +71,8 @@ public:
 	Chat() {}
 	Chat(int datamsg, char* id, char* chatdata);
 	~Chat() {}
+	char* GetID() { return ID; }
+	char* GetMessage() { return message; }
 private:
 	char ID[10];
 	char message[30];
@@ -81,17 +85,20 @@ public:
 	AddBlock() {}
 	AddBlock(int datamsg, Vector3 pos);
 	~AddBlock() {}
+	Vector3 GetPosition() { return position; }
+
 private:
 	Vector3 position;
 	char padding[34];
 };
 
-class Collide : public GameData
+class S_Collide : public GameData
 {
 public:
-	Collide() {}
-	Collide(int datamsg, int index);
-	~Collide() {}
+	S_Collide() {}
+	S_Collide(int datamsg, int index);
+	~S_Collide() {}
+	int GetItem_index() { return item_index; }
 private:
 	int item_index;
 	char padding[42];
@@ -102,6 +109,8 @@ public:
 	Leave(){}
 	Leave(int datamsg, char* id);
 	~Leave() {}
+	char* GetID() { return ID; }
+
 private:
 	char ID[10];
 	char padding[36];
@@ -123,6 +132,8 @@ public:
 	Pause() {}
 	Pause(int datmsg, bool pause_enable);
 	~Pause() {}
+	bool GetPause() { return pause; }
+
 private:
 	bool pause;
 	char padding[44];

@@ -1,6 +1,8 @@
-#define  _CRT_SECURE_NO_WARNINGS
+ï»¿#define  _CRT_SECURE_NO_WARNINGS
 #define STB_IMAGE_IMPLEMENTATION
 
+#define SERVERIP "127.0.0.1"			//ì„œë²„ IP ë°›ì•„ì„œ ì¨ì•¼í•¨
+#define SERVERPORT 9000
 
 #include <vector>
 #include <gl/glew.h>
@@ -33,6 +35,8 @@
 
 #include "Input.h"
 #include "DestroyEffect.h"
+
+#include "Common.h"
 
 MCI_OPEN_PARMS m_mciOpenParms;
 MCI_PLAY_PARMS m_mciPlayParms;
@@ -79,7 +83,7 @@ void TimerFunction(int value);
 void InitBuffer_bind(const int);
 
 
-// obj ÀĞ±â º¯¼ö
+// obj ì½ê¸° ë³€ìˆ˜
 
 int loadObj(const char* filename);
 int loadObj_normalize_center_3f(const char* filename);
@@ -90,11 +94,11 @@ int num_vertices = 3;
 
 
 float sunSize;
-int shape = 1;					// ºÒ·¯¿Ã ¸ğ¾ç (1. À°¸éÃ¼, 2. ±¸)
+int shape = 1;					// ë¶ˆëŸ¬ì˜¬ ëª¨ì–‘ (1. ìœ¡ë©´ì²´, 2. êµ¬)
 
 ObjRoad obj;
 
-// ÅØ½ºÃÄ º¯¼ö
+// í…ìŠ¤ì³ ë³€ìˆ˜
 
 int img = 7;
 GLuint texture[40];
@@ -102,16 +106,16 @@ int n_model = 0;
 int n_max_model = 4;
 int widthImage, heightImage, numberOfChannel = 0;
 
-// °ÔÀÓ º¯¼ö
+// ê²Œì„ ë³€ìˆ˜
 int num_ob = 10;
 
-int game = 0;					// °ÔÀÓ state
+int game = 0;					// ê²Œì„ state
 
 int intmpx = 0;
 int intmpy = 0;
 
-float mousex = 0;				// ¸¶¿ì½º x
-float mousey = 0;				// ¸¶¿ì½º y
+float mousex = 0;				// ë§ˆìš°ìŠ¤ x
+float mousey = 0;				// ë§ˆìš°ìŠ¤ y
 
 float create_height = 8.0f;
 
@@ -130,11 +134,22 @@ std::list<Scene*> sc;
 
 int Pcolor;
 
+SOCKET sock;
+
 void SceneChange(int num_scene);
 void ResetChange();
 void NestSceneChange();
+
+DWORD WINAPI RecvThread(LPVOID temp);
 int main(int argc, char** argv)
 {
+
+	WSADATA wsa;
+	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
+		return 1;
+
+	CreateThread(NULL, 0, RecvThread, NULL, 0, NULL);
+
 	// create window using freeglut
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
@@ -152,14 +167,14 @@ int main(int argc, char** argv)
 		std::cerr << "Unable to initialize GLEW ... exiting" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	else
-	{
-		std::cout << "GLEW OK\n";
-	}
 
 	//////////////////////////////////////////////////////////////////////////////////////
 	//// Create shader program an register the shader
 	//////////////////////////////////////////////////////////////////////////////////////
+
+	std::cout << std::endl << " ======== Login ======== " << std::endl << std::endl;
+	std::cout << std::endl << "ì‚¬ìš© í•  ë‹‰ë„¤ì„ì„ ì…ë ¥í•´ì£¼ì„¸ìš” : ";
+	std::cout << std::endl << "ì ‘ì† í•  ì„œë²„ì£¼ì†Œë¥¼ ì…ë ¥í•´ì£¼ì„¸ìš” : ";
 
 	GLuint vShader[4];
 	GLuint fShader[4];
@@ -214,7 +229,7 @@ int main(int argc, char** argv)
 	glPolygonMode(GL_FRONT_AND_BACK, GL_LINE);
 
 
-	// freeglut À©µµ¿ì ÀÌº¥Æ® Ã³¸® ½ÃÀÛ. À©µµ¿ì°¡ ´İÈú¶§±îÁö ÈÄÇÑ·çÇÁ ½ÇÇà.
+	// freeglut ìœˆë„ìš° ì´ë²¤íŠ¸ ì²˜ë¦¬ ì‹œì‘. ìœˆë„ìš°ê°€ ë‹«íë•Œê¹Œì§€ í›„í•œë£¨í”„ ì‹¤í–‰.
 	glutMainLoop();
 
 	return 0;
@@ -223,7 +238,7 @@ int main(int argc, char** argv)
 
 void InitBuffer()
 {
-	//// 5.1. VAO °´Ã¼ »ı¼º ¹× ¹ÙÀÎµù
+	//// 5.1. VAO ê°ì²´ ìƒì„± ë° ë°”ì¸ë”©
 	glGenVertexArrays(10, VAO);
 	glGenBuffers(10, VBO_position);
 	glGenBuffers(10, VBO_normal);
@@ -303,7 +318,7 @@ void InitBuffer_bind(const int street) {
 	glVertexAttribPointer(tAttribute, 2, GL_FLOAT, GL_FALSE, 2 * sizeof(float), 0);
 	glEnableVertexAttribArray(tAttribute);
 
-	obj.outvertex = std::vector< glm::vec3 >(0.0f);  // ´ÙÀ½ obj ºÒ·¯¿À±â À§ÇÑ ÃÊ±âÈ­
+	obj.outvertex = std::vector< glm::vec3 >(0.0f);  // ë‹¤ìŒ obj ë¶ˆëŸ¬ì˜¤ê¸° ìœ„í•œ ì´ˆê¸°í™”
 	obj.outnormal = std::vector< glm::vec3 >(0.0f);
 	obj.outuv = std::vector< glm::vec2 >(0.0f);
 
@@ -323,31 +338,32 @@ void InitTexture()
 		"Resource/face.png","Resource/sand.png", "Resource/skybox2_top.png", "Resource/skybox2_left.png", "Resource/skybox2_front.png", "Resource/skybox2_right.png",
 		"Resource/skybox2_back.png", "Resource/skybox2_bottom.png", "Resource/vinus.png", "Resource/mars.png", "Resource/jupiter.png", "Resource/magma2.png", "Resource/sun.png","Resource/xxx.png",
 		"Resource/green.png", "Resource/yellow.png","Resource/skybox3_top.png", "Resource/skybox3_left.png", "Resource/skybox3_front.png", "Resource/skybox3_right.png",
-		"Resource/skybox3_back.png", "Resource/skybox3_bottom.png", "Resource/Item.png","Resource/GameClear.png","Resource/axe.png","Resource/shoe.png","Resource/Robby.png"};
+		"Resource/skybox3_back.png", "Resource/skybox3_bottom.png", "Resource/Item.png","Resource/GameClear.png","Resource/axe.png","Resource/shoe.png","Resource/Robby.png",
+		"Resource/slime.png" };
 		//20																				
-	glGenTextures(40, texture); //--- ÅØ½ºÃ³ »ı¼º
+	glGenTextures(40, texture); //--- í…ìŠ¤ì²˜ ìƒì„±
 
 	for (int i = 0; i < 40; ++i) {
-		glBindTexture(GL_TEXTURE_2D, texture[i]); //--- ÅØ½ºÃ³ ¹ÙÀÎµù
-		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT); //--- ÇöÀç ¹ÙÀÎµùµÈ ÅØ½ºÃ³ÀÇ ÆÄ¶ó¹ÌÅÍ ¼³Á¤ÇÏ±â
+		glBindTexture(GL_TEXTURE_2D, texture[i]); //--- í…ìŠ¤ì²˜ ë°”ì¸ë”©
+		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT); //--- í˜„ì¬ ë°”ì¸ë”©ëœ í…ìŠ¤ì²˜ì˜ íŒŒë¼ë¯¸í„° ì„¤ì •í•˜ê¸°
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_LINEAR);
 		glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
 		stbi_set_flip_vertically_on_load(true);
-		unsigned char* data = stbi_load(map[i].c_str(), &widthImage, &heightImage, &numberOfChannel, 0);//--- ÅØ½ºÃ³·Î »ç¿ëÇÒ ºñÆ®¸Ê ÀÌ¹ÌÁö ·ÎµåÇÏ±â
-		glTexImage2D(GL_TEXTURE_2D, 0, 3, widthImage, heightImage, 0, GL_RGBA, GL_UNSIGNED_BYTE, data); //---ÅØ½ºÃ³ ÀÌ¹ÌÁö Á¤ÀÇ
+		unsigned char* data = stbi_load(map[i].c_str(), &widthImage, &heightImage, &numberOfChannel, 0);//--- í…ìŠ¤ì²˜ë¡œ ì‚¬ìš©í•  ë¹„íŠ¸ë§µ ì´ë¯¸ì§€ ë¡œë“œí•˜ê¸°
+		glTexImage2D(GL_TEXTURE_2D, 0, 3, widthImage, heightImage, 0, GL_RGBA, GL_UNSIGNED_BYTE, data); //---í…ìŠ¤ì²˜ ì´ë¯¸ì§€ ì •ì˜
 		stbi_image_free(data);
 	}
 
 	glUseProgram(s_program[0]);
-	int tLocation = glGetUniformLocation(s_program[0], "outTex"); //--- outTexture À¯´ÏÆû »ùÇÃ·¯ÀÇ À§Ä¡¸¦ °¡Á®¿È
-	glUniform1i(tLocation, 0); //--- »ùÇÃ·¯¸¦ 0¹ø À¯´ÖÀ¸·Î ¼³Á¤
+	int tLocation = glGetUniformLocation(s_program[0], "outTex"); //--- outTexture ìœ ë‹ˆí¼ ìƒ˜í”ŒëŸ¬ì˜ ìœ„ì¹˜ë¥¼ ê°€ì ¸ì˜´
+	glUniform1i(tLocation, 0); //--- ìƒ˜í”ŒëŸ¬ë¥¼ 0ë²ˆ ìœ ë‹›ìœ¼ë¡œ ì„¤ì •
 }
 
 void Display()
 {
 	//*************************************************************************
-	// Ãâ·Â ¼³Á¤
+	// ì¶œë ¥ ì„¤ì •
 	glClearColor(0.0f, 0.0f, 0.0f, 1.0f);
 	glClear(GL_COLOR_BUFFER_BIT | GL_DEPTH_BUFFER_BIT);
 
@@ -361,23 +377,23 @@ void Display()
 	ShowCursor(false);
 
 	//*************************************************************************
-	// Ä«¸Ş¶ó ¼³Á¤
+	// ì¹´ë©”ë¼ ì„¤ì •
 	unsigned int modelLocation = glGetUniformLocation(s_program[0], "model");
 	//*************************************************************************
-	// Á¶¸í ¼³Á¤
+	// ì¡°ëª… ì„¤ì •
 
 
-	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos °ª Àü´Ş: (0.0, 0.0, 5.0);
+	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos ê°’ ì „ë‹¬: (0.0, 0.0, 5.0);
 	glUniform3f(lightPosLocation, 0.0, 10.0, 0.0);
-	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor °ª Àü´Ş: (1.0, 1.0, 1.0) ¹é»ö
+	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor ê°’ ì „ë‹¬: (1.0, 1.0, 1.0) ë°±ìƒ‰
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 	int lighAmbientLocation = glGetUniformLocation(s_program[0], "lightAmbient"); //--- lightAmbient 
 	glUniform3f(lighAmbientLocation, f_Light_ambients[0], f_Light_ambients[1], f_Light_ambients[2]);
-	Pcolor = glGetUniformLocation(s_program[0], "color"); //--- lightColor °ª Àü´Ş: (1.0, 1.0, 1.0) ¹é»ö
+	Pcolor = glGetUniformLocation(s_program[0], "color"); //--- lightColor ê°’ ì „ë‹¬: (1.0, 1.0, 1.0) ë°±ìƒ‰
 	glUniform4f(Pcolor, 0.0, 0.0, 0.0, 0.0);
 
 	//*************************************************************************
-	// ±×¸®±â ºÎºĞ
+	// ê·¸ë¦¬ê¸° ë¶€ë¶„
 
 	glUseProgram(s_program[0]);
 
@@ -454,14 +470,14 @@ void Display()
 
 
 	glDisable(GL_CULL_FACE);
-	glDisable(GL_BLEND); // ºí·»µù ÇØÁ¦
+	glDisable(GL_BLEND); // ë¸”ë Œë”© í•´ì œ
 
 	glutSwapBuffers();
 }
 
 void Display_Sub_Lobby()
 {
-	// Ä«¸Ş¶ó ¼³Á¤
+	// ì¹´ë©”ë¼ ì„¤ì •
 	unsigned int modelLocation = glGetUniformLocation(s_program[0], "model");
 	unsigned int viewLocation = glGetUniformLocation(s_program[0], "view");
 	unsigned int projLocation = glGetUniformLocation(s_program[0], "projection");
@@ -474,13 +490,13 @@ void Display_Sub_Lobby()
 	glUniformMatrix4fv(projLocation, 1, GL_FALSE, &Pj[0][0]);
 
 	//*************************************************************************
-	// Á¶¸í ¼³Á¤
-	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos °ª Àü´Ş: (0.0, 0.0, 5.0);
+	// ì¡°ëª… ì„¤ì •
+	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos ê°’ ì „ë‹¬: (0.0, 0.0, 5.0);
 	glUniform3f(lightPosLocation, 0.0, 0.0, 0.0);
-	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor °ª Àü´Ş: (1.0, 1.0, 1.0) ¹é»ö
+	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor ê°’ ì „ë‹¬: (1.0, 1.0, 1.0) ë°±ìƒ‰
 	glUniform3f(lightColorLocation, 0.8, 0.8, 0.8);
 	//*************************************************************************
-	// ±×¸®±â ºÎºĞ
+	// ê·¸ë¦¬ê¸° ë¶€ë¶„
 	glViewport(0, 0, 800, 800);
 	glBindTexture(GL_TEXTURE_2D, texture[32]);
 	glBindVertexArray(VAO[Plane]);
@@ -494,7 +510,7 @@ void Display_Sub_Lobby()
 
 void Display_Sub1()
 {
-	// Ä«¸Ş¶ó ¼³Á¤
+	// ì¹´ë©”ë¼ ì„¤ì •
 	unsigned int modelLocation = glGetUniformLocation(s_program[0], "model");
 	unsigned int viewLocation = glGetUniformLocation(s_program[0], "view");
 	unsigned int projLocation = glGetUniformLocation(s_program[0], "projection");
@@ -507,13 +523,13 @@ void Display_Sub1()
 	glUniformMatrix4fv(projLocation, 1, GL_FALSE, &Pj[0][0]);
 
 	//*************************************************************************
-	// Á¶¸í ¼³Á¤
-	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos °ª Àü´Ş: (0.0, 0.0, 5.0);
+	// ì¡°ëª… ì„¤ì •
+	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos ê°’ ì „ë‹¬: (0.0, 0.0, 5.0);
 	glUniform3f(lightPosLocation, 0.0, 0.0, 0.0);
-	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor °ª Àü´Ş: (1.0, 1.0, 1.0) ¹é»ö
+	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor ê°’ ì „ë‹¬: (1.0, 1.0, 1.0) ë°±ìƒ‰
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 	//*************************************************************************
-	// ±×¸®±â ºÎºĞ
+	// ê·¸ë¦¬ê¸° ë¶€ë¶„
 	glViewport(100, 400, 600, 300);
 
 	glBindVertexArray(VAO[Plane]);
@@ -533,7 +549,7 @@ void Display_Sub1()
 }
 void Display_Sub_Axe1()
 {
-	// Ä«¸Ş¶ó ¼³Á¤
+	// ì¹´ë©”ë¼ ì„¤ì •
 	unsigned int modelLocation = glGetUniformLocation(s_program[0], "model");
 	unsigned int viewLocation = glGetUniformLocation(s_program[0], "view");
 	unsigned int projLocation = glGetUniformLocation(s_program[0], "projection");
@@ -546,13 +562,13 @@ void Display_Sub_Axe1()
 	glUniformMatrix4fv(projLocation, 1, GL_FALSE, &Pj[0][0]);
 
 	//*************************************************************************
-	// Á¶¸í ¼³Á¤
-	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos °ª Àü´Ş: (0.0, 0.0, 5.0);
+	// ì¡°ëª… ì„¤ì •
+	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos ê°’ ì „ë‹¬: (0.0, 0.0, 5.0);
 	glUniform3f(lightPosLocation, 0.0, 0.0, 0.0);
-	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor °ª Àü´Ş: (1.0, 1.0, 1.0) ¹é»ö
+	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor ê°’ ì „ë‹¬: (1.0, 1.0, 1.0) ë°±ìƒ‰
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 	//*************************************************************************
-	// ±×¸®±â ºÎºĞ
+	// ê·¸ë¦¬ê¸° ë¶€ë¶„
 	glViewport(720, 720, 80, 80);
 	glBindTexture(GL_TEXTURE_2D, texture[30]);
 	glBindVertexArray(VAO[Plane]);
@@ -566,7 +582,7 @@ void Display_Sub_Axe1()
 
 void Display_Sub_Axe2()
 {
-	// Ä«¸Ş¶ó ¼³Á¤
+	// ì¹´ë©”ë¼ ì„¤ì •
 	unsigned int modelLocation = glGetUniformLocation(s_program[0], "model");
 	unsigned int viewLocation = glGetUniformLocation(s_program[0], "view");
 	unsigned int projLocation = glGetUniformLocation(s_program[0], "projection");
@@ -579,13 +595,13 @@ void Display_Sub_Axe2()
 	glUniformMatrix4fv(projLocation, 1, GL_FALSE, &Pj[0][0]);
 
 	//*************************************************************************
-	// Á¶¸í ¼³Á¤
-	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos °ª Àü´Ş: (0.0, 0.0, 5.0);
+	// ì¡°ëª… ì„¤ì •
+	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos ê°’ ì „ë‹¬: (0.0, 0.0, 5.0);
 	glUniform3f(lightPosLocation, 0.0, 0.0, 0.0);
-	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor °ª Àü´Ş: (1.0, 1.0, 1.0) ¹é»ö
+	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor ê°’ ì „ë‹¬: (1.0, 1.0, 1.0) ë°±ìƒ‰
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 	//*************************************************************************
-	// ±×¸®±â ºÎºĞ
+	// ê·¸ë¦¬ê¸° ë¶€ë¶„
 	glViewport(640, 720, 80, 80);
 	glBindTexture(GL_TEXTURE_2D, texture[30]);
 	glBindVertexArray(VAO[Plane]);
@@ -598,7 +614,7 @@ void Display_Sub_Axe2()
 }
 void Display_Sub_Axe3()
 {
-	// Ä«¸Ş¶ó ¼³Á¤
+	// ì¹´ë©”ë¼ ì„¤ì •
 	unsigned int modelLocation = glGetUniformLocation(s_program[0], "model");
 	unsigned int viewLocation = glGetUniformLocation(s_program[0], "view");
 	unsigned int projLocation = glGetUniformLocation(s_program[0], "projection");
@@ -611,13 +627,13 @@ void Display_Sub_Axe3()
 	glUniformMatrix4fv(projLocation, 1, GL_FALSE, &Pj[0][0]);
 
 	//*************************************************************************
-	// Á¶¸í ¼³Á¤
-	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos °ª Àü´Ş: (0.0, 0.0, 5.0);
+	// ì¡°ëª… ì„¤ì •
+	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos ê°’ ì „ë‹¬: (0.0, 0.0, 5.0);
 	glUniform3f(lightPosLocation, 0.0, 0.0, 0.0);
-	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor °ª Àü´Ş: (1.0, 1.0, 1.0) ¹é»ö
+	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor ê°’ ì „ë‹¬: (1.0, 1.0, 1.0) ë°±ìƒ‰
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 	//*************************************************************************
-	// ±×¸®±â ºÎºĞ
+	// ê·¸ë¦¬ê¸° ë¶€ë¶„
 	glViewport(560, 720, 80, 80);
 	glBindTexture(GL_TEXTURE_2D, texture[30]);
 	glBindVertexArray(VAO[Plane]);
@@ -630,7 +646,7 @@ void Display_Sub_Axe3()
 }
 void Display_Sub_Shoe1()
 {
-	// Ä«¸Ş¶ó ¼³Á¤
+	// ì¹´ë©”ë¼ ì„¤ì •
 	unsigned int modelLocation = glGetUniformLocation(s_program[0], "model");
 	unsigned int viewLocation = glGetUniformLocation(s_program[0], "view");
 	unsigned int projLocation = glGetUniformLocation(s_program[0], "projection");
@@ -643,13 +659,13 @@ void Display_Sub_Shoe1()
 	glUniformMatrix4fv(projLocation, 1, GL_FALSE, &Pj[0][0]);
 
 	//*************************************************************************
-	// Á¶¸í ¼³Á¤
-	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos °ª Àü´Ş: (0.0, 0.0, 5.0);
+	// ì¡°ëª… ì„¤ì •
+	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos ê°’ ì „ë‹¬: (0.0, 0.0, 5.0);
 	glUniform3f(lightPosLocation, 0.0, 0.0, 0.0);
-	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor °ª Àü´Ş: (1.0, 1.0, 1.0) ¹é»ö
+	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor ê°’ ì „ë‹¬: (1.0, 1.0, 1.0) ë°±ìƒ‰
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 	//*************************************************************************
-	// ±×¸®±â ºÎºĞ
+	// ê·¸ë¦¬ê¸° ë¶€ë¶„
 	glViewport(720, 640, 80, 80);
 	glBindTexture(GL_TEXTURE_2D, texture[31]);
 	glBindVertexArray(VAO[Plane]);
@@ -662,7 +678,7 @@ void Display_Sub_Shoe1()
 }
 void Display_Sub_Shoe2()
 {
-	// Ä«¸Ş¶ó ¼³Á¤
+	// ì¹´ë©”ë¼ ì„¤ì •
 	unsigned int modelLocation = glGetUniformLocation(s_program[0], "model");
 	unsigned int viewLocation = glGetUniformLocation(s_program[0], "view");
 	unsigned int projLocation = glGetUniformLocation(s_program[0], "projection");
@@ -675,13 +691,13 @@ void Display_Sub_Shoe2()
 	glUniformMatrix4fv(projLocation, 1, GL_FALSE, &Pj[0][0]);
 
 	//*************************************************************************
-	// Á¶¸í ¼³Á¤
-	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos °ª Àü´Ş: (0.0, 0.0, 5.0);
+	// ì¡°ëª… ì„¤ì •
+	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos ê°’ ì „ë‹¬: (0.0, 0.0, 5.0);
 	glUniform3f(lightPosLocation, 0.0, 0.0, 0.0);
-	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor °ª Àü´Ş: (1.0, 1.0, 1.0) ¹é»ö
+	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor ê°’ ì „ë‹¬: (1.0, 1.0, 1.0) ë°±ìƒ‰
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 	//*************************************************************************
-	// ±×¸®±â ºÎºĞ
+	// ê·¸ë¦¬ê¸° ë¶€ë¶„
 	glViewport(640, 640, 80, 80);
 	glBindTexture(GL_TEXTURE_2D, texture[31]);
 	glBindVertexArray(VAO[Plane]);
@@ -838,26 +854,26 @@ void TimerFunction(int value) {
 	bool collide = false;
 
 	if (Scene::scene->p_player->GetComponent<Camera>()->state == FIRST_VIEW) {
-		if (key['a']) {						// À§·Î ÀÌµ¿
+		if (key['a']) {						// ìœ„ë¡œ ì´ë™
 			Scene::scene->p_player->GetComponent<Transform3D>()->position.x += sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 			Scene::scene->p_player->GetComponent<Transform3D>()->position.z -= cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 			Scene::scene->p_player->GetComponent<Transform3D>()->direction.x += sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 			Scene::scene->p_player->GetComponent<Transform3D>()->direction.z -= cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 
 		}
-		if (key['d']) {						// ¾Æ·¡·Î ÀÌµ¿
+		if (key['d']) {						// ì•„ë˜ë¡œ ì´ë™
 			Scene::scene->p_player->GetComponent<Transform3D>()->position.x -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 			Scene::scene->p_player->GetComponent<Transform3D>()->position.z += cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 			Scene::scene->p_player->GetComponent<Transform3D>()->direction.x -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 			Scene::scene->p_player->GetComponent<Transform3D>()->direction.z += cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 		}
-		if (key['s']) {						// ¿ŞÂÊÀ¸·Î ÀÌµ¿
+		if (key['s']) {						// ì™¼ìª½ìœ¼ë¡œ ì´ë™
 			Scene::scene->p_player->GetComponent<Transform3D>()->position.x -= cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 			Scene::scene->p_player->GetComponent<Transform3D>()->position.z -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 			Scene::scene->p_player->GetComponent<Transform3D>()->direction.x -= cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 			Scene::scene->p_player->GetComponent<Transform3D>()->direction.z -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 		}
-		if (key['w']) {						// ¿À¸¥ÂÊÀ¸·Î ÀÌµ¿
+		if (key['w']) {						// ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì´ë™
 			Scene::scene->p_player->GetComponent<Transform3D>()->position.x += cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 			Scene::scene->p_player->GetComponent<Transform3D>()->position.z += sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 			Scene::scene->p_player->GetComponent<Transform3D>()->direction.x += cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
@@ -865,19 +881,19 @@ void TimerFunction(int value) {
 		}
 	}
 	else if (Scene::scene->p_player->GetComponent<Camera>()->state == TOP_VIEW) {
-		if (key['a']) {						// À§·Î ÀÌµ¿
+		if (key['a']) {						// ìœ„ë¡œ ì´ë™
 			Scene::scene->p_player->GetComponent<Camera>()->top_pos.x -= 0.1f;
 			Scene::scene->p_player->GetComponent<Camera>()->top_dir.x -= 0.1f;
 		}
-		if (key['d']) {						// ¾Æ·¡·Î ÀÌµ¿
+		if (key['d']) {						// ì•„ë˜ë¡œ ì´ë™
 			Scene::scene->p_player->GetComponent<Camera>()->top_pos.x += 0.1f;
 			Scene::scene->p_player->GetComponent<Camera>()->top_dir.x += 0.1f;
 		}
-		if (key['s']) {						// ¿ŞÂÊÀ¸·Î ÀÌµ¿
+		if (key['s']) {						// ì™¼ìª½ìœ¼ë¡œ ì´ë™
 			Scene::scene->p_player->GetComponent<Camera>()->top_pos.z += 0.1f;
 			Scene::scene->p_player->GetComponent<Camera>()->top_dir.z += 0.1f;
 		}
-		if (key['w']) {						// ¿À¸¥ÂÊÀ¸·Î ÀÌµ¿
+		if (key['w']) {						// ì˜¤ë¥¸ìª½ìœ¼ë¡œ ì´ë™
 			Scene::scene->p_player->GetComponent<Camera>()->top_pos.z -= 0.1f;
 			Scene::scene->p_player->GetComponent<Camera>()->top_dir.z -= 0.1f;
 		}
@@ -939,4 +955,29 @@ void NestSceneChange()
 	}
 	sc.emplace_back(new GameScene(Scene::scene->n_scene + 1, num_shape_list, texture, VAO, s_program));
 	sc.erase(p);
+}
+
+DWORD WINAPI RecvThread(LPVOID temp)
+{
+	int retval;
+	sock = socket(AF_INET, SOCK_STREAM, 0);
+	if (sock == INVALID_SOCKET) err_display("socket()");
+
+	struct sockaddr_in serveraddr;
+	memset(&serveraddr, 0, sizeof(serveraddr));
+	serveraddr.sin_family = AF_INET;
+	inet_pton(AF_INET, SERVERIP, &serveraddr.sin_addr);
+	serveraddr.sin_port = htons(SERVERPORT);
+	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
+	if (retval == SOCKET_ERROR) err_display("connect()");
+
+	GameData Data;
+	while (1)
+	{
+		retval = recv(sock, (char*)&Data, 52, 0);
+		if (retval == SOCKET_ERROR) err_display("recv()");
+		//
+		//Data MSGÅ¥ï¿½ï¿½ ï¿½Ö±ï¿½
+		//
+	}
 }
