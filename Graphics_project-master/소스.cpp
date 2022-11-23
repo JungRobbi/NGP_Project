@@ -1,7 +1,5 @@
 #define  _CRT_SECURE_NO_WARNINGS
 #define STB_IMAGE_IMPLEMENTATION
-#define SERVERIP "127.0.0.1"			//로그인할 때 서버 IP받아와야함
-#define SERVERPORT 9000
 
 
 #include <vector>
@@ -36,9 +34,6 @@
 #include "Input.h"
 #include "DestroyEffect.h"
 
-
-#include "Common.h"
-#include "GameData.h"
 MCI_OPEN_PARMS m_mciOpenParms;
 MCI_PLAY_PARMS m_mciPlayParms;
 DWORD m_dwDeviceID;
@@ -74,6 +69,7 @@ void Display_Sub_Axe2();
 void Display_Sub_Axe3();
 void Display_Sub_Shoe1();
 void Display_Sub_Shoe2();
+void Display_Sub_Lobby();
 
 void Reshape(int w, int h);
 void InitBuffer();
@@ -123,6 +119,7 @@ float f_Light_ambients[3];
 
 BoundingBox BoundBox[10];
 
+
 glm::mat4 TR = glm::mat4(1.0f);
 
 bool key[256];
@@ -131,24 +128,13 @@ bool start = false;
 
 std::list<Scene*> sc;
 
-SOCKET sock;
-
+int Pcolor;
 
 void SceneChange(int num_scene);
 void ResetChange();
 void NestSceneChange();
-DWORD WINAPI RecvThread(LPVOID temp);
-
 int main(int argc, char** argv)
 {
-
-	WSADATA wsa;
-	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
-		return 1;
-
-	CreateThread(NULL, 0, RecvThread, NULL, 0, NULL);
-
-
 	// create window using freeglut
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
@@ -166,14 +152,14 @@ int main(int argc, char** argv)
 		std::cerr << "Unable to initialize GLEW ... exiting" << std::endl;
 		exit(EXIT_FAILURE);
 	}
-	else
-	{
-		std::cout << "GLEW OK\n";
-	}
 
 	//////////////////////////////////////////////////////////////////////////////////////
 	//// Create shader program an register the shader
 	//////////////////////////////////////////////////////////////////////////////////////
+
+	std::cout << std::endl << " ======== Login ======== " << std::endl << std::endl;
+	std::cout << std::endl << "사용 할 닉네임을 입력해주세요 : ";
+	std::cout << std::endl << "접속 할 서버주소를 입력해주세요 : ";
 
 	GLuint vShader[4];
 	GLuint fShader[4];
@@ -210,7 +196,7 @@ int main(int argc, char** argv)
 		mciSendCommand(dwID, MCI_PLAY, MCI_DGV_PLAY_REPEAT, (DWORD)(LPVOID)&m_mciPlayParms);
 	}
 
-	sc.emplace_back(new GameScene(1, num_shape_list, texture, VAO, s_program));
+	sc.emplace_back(new GameScene(0, num_shape_list, texture, VAO, s_program));
 
 
 	// callback functions
@@ -337,8 +323,8 @@ void InitTexture()
 		"Resource/face.png","Resource/sand.png", "Resource/skybox2_top.png", "Resource/skybox2_left.png", "Resource/skybox2_front.png", "Resource/skybox2_right.png",
 		"Resource/skybox2_back.png", "Resource/skybox2_bottom.png", "Resource/vinus.png", "Resource/mars.png", "Resource/jupiter.png", "Resource/magma2.png", "Resource/sun.png","Resource/xxx.png",
 		"Resource/green.png", "Resource/yellow.png","Resource/skybox3_top.png", "Resource/skybox3_left.png", "Resource/skybox3_front.png", "Resource/skybox3_right.png",
-		"Resource/skybox3_back.png", "Resource/skybox3_bottom.png", "Resource/Item.png","Resource/GameClear.png","Resource/axe.png","Resource/shoe.png" };
-		//20																				// ↑ 여기가 14
+		"Resource/skybox3_back.png", "Resource/skybox3_bottom.png", "Resource/Item.png","Resource/GameClear.png","Resource/axe.png","Resource/shoe.png","Resource/Robby.png"};
+		//20																				
 	glGenTextures(40, texture); //--- 텍스처 생성
 
 	for (int i = 0; i < 40; ++i) {
@@ -387,6 +373,8 @@ void Display()
 	glUniform3f(lightColorLocation, 1.0, 1.0, 1.0);
 	int lighAmbientLocation = glGetUniformLocation(s_program[0], "lightAmbient"); //--- lightAmbient 
 	glUniform3f(lighAmbientLocation, f_Light_ambients[0], f_Light_ambients[1], f_Light_ambients[2]);
+	Pcolor = glGetUniformLocation(s_program[0], "color"); //--- lightColor 값 전달: (1.0, 1.0, 1.0) 백색
+	glUniform4f(Pcolor, 0.0, 0.0, 0.0, 0.0);
 
 	//*************************************************************************
 	// 그리기 부분
@@ -432,7 +420,9 @@ void Display()
 	glBindTexture(GL_TEXTURE_2D, texture[1]);
 	glDrawArrays(GL_TRIANGLES, 0, num_shape_list[3]);*/
 
-
+	if (Scene::scene->n_scene == 0) {
+		Display_Sub_Lobby();
+	}
 	if (f_Light_ambients[0] < 0.3f || Scene::scene->n_scene == 7) {
 		Display_Sub1();
 	}
@@ -467,6 +457,39 @@ void Display()
 	glDisable(GL_BLEND); // 블렌딩 해제
 
 	glutSwapBuffers();
+}
+
+void Display_Sub_Lobby()
+{
+	// 카메라 설정
+	unsigned int modelLocation = glGetUniformLocation(s_program[0], "model");
+	unsigned int viewLocation = glGetUniformLocation(s_program[0], "view");
+	unsigned int projLocation = glGetUniformLocation(s_program[0], "projection");
+
+	glm::mat4 Vw = glm::mat4(1.0f);
+	glm::mat4 Pj = glm::mat4(1.0f);
+	Vw = glm::lookAt(glm::vec3(0.0f, 0.0f, 0.0f), glm::vec3(0.0f, 0.0f, -1.0f), glm::vec3(0.0f, 1.0f, 0.0f));
+	Pj = glm::ortho(-1.0f, 1.0f, -1.0f, 1.0f, 0.1f, 100.00f);
+	glUniformMatrix4fv(viewLocation, 1, GL_FALSE, &Vw[0][0]);
+	glUniformMatrix4fv(projLocation, 1, GL_FALSE, &Pj[0][0]);
+
+	//*************************************************************************
+	// 조명 설정
+	int lightPosLocation = glGetUniformLocation(s_program[0], "lightPos"); //--- lightPos 값 전달: (0.0, 0.0, 5.0);
+	glUniform3f(lightPosLocation, 0.0, 0.0, 0.0);
+	int lightColorLocation = glGetUniformLocation(s_program[0], "lightColor"); //--- lightColor 값 전달: (1.0, 1.0, 1.0) 백색
+	glUniform3f(lightColorLocation, 0.8, 0.8, 0.8);
+	//*************************************************************************
+	// 그리기 부분
+	glViewport(0, 0, 800, 800);
+	glBindTexture(GL_TEXTURE_2D, texture[32]);
+	glBindVertexArray(VAO[Plane]);
+	TR = glm::mat4(1.0f);
+	TR = glm::translate(TR, glm::vec3(0.0f, 0.0f, -3.0f));
+	glUniformMatrix4fv(modelLocation, 1, GL_FALSE, glm::value_ptr(TR));
+	glDrawArrays(GL_TRIANGLES, 0, num_shape_list[Plane]);
+
+
 }
 
 void Display_Sub1()
@@ -752,6 +775,10 @@ void keyboard(unsigned char key2, int x, int y) {
 	}
 
 	switch (key2) {
+	case ';':
+		sc.pop_front();
+		sc.emplace_back(new GameScene(1, num_shape_list, texture, VAO, s_program));
+		break;
 	case 'r':
 		if (Scene::scene->p_player->GetComponent<Camera>()->state == FIRST_TO_TOP ||
 			Scene::scene->p_player->GetComponent<Camera>()->state == FIRST_VIEW)
@@ -912,30 +939,4 @@ void NestSceneChange()
 	}
 	sc.emplace_back(new GameScene(Scene::scene->n_scene + 1, num_shape_list, texture, VAO, s_program));
 	sc.erase(p);
-}
-
-
-DWORD WINAPI RecvThread(LPVOID temp)
-{
-	int retval;
-	sock = socket(AF_INET, SOCK_STREAM, 0);
-	if (sock == INVALID_SOCKET) err_display("socket()");
-
-	struct sockaddr_in serveraddr;
-	memset(&serveraddr, 0, sizeof(serveraddr));
-	serveraddr.sin_family = AF_INET;
-	inet_pton(AF_INET, SERVERIP, &serveraddr.sin_addr);
-	serveraddr.sin_port = htons(SERVERPORT);
-	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
-	if (retval == SOCKET_ERROR) err_display("connect()");
-
-	GameData Data;
-	while (1)
-	{
-		retval = recv(sock, (char*)&Data, 52, 0);
-		if (retval == SOCKET_ERROR) err_display("recv()");
-		//
-		//Data MSG큐에 넣기
-		//
-	}
 }

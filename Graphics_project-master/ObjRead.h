@@ -83,8 +83,6 @@ public:
 			}
 		}
 
-		std::cout << "minX: " << minX << " minY: " << minY << " minZ: " << minZ << std::endl;
-		std::cout << "maxX: " << maxX << " maxY: " << maxY << " maxZ: " << maxZ << std::endl;
 
 		aveX = sumX / vertexIndices.size();
 		aveY = sumY / vertexIndices.size();
@@ -105,8 +103,6 @@ public:
 			else
 				scaleAll = scaleZ;
 		}
-		std::cout << "aveX: " << aveX << " aveY: " << aveY << " aveZ: " << aveZ << std::endl;
-
 		for (unsigned int i = 0; i < vertexIndices.size(); i++) {
 			unsigned int vertexIndex = vertexIndices[i];
 			glm::vec3 vertex = temp_vertices[vertexIndex - 1];
@@ -138,7 +134,6 @@ public:
 			return false;
 		}
 
-		printf("=== filename : %s ===\n", filename);
 		while (1) {
 
 			char lineHeader[128];
@@ -192,9 +187,6 @@ public:
 			}
 		}
 
-		std::cout << "minX: " << minX << " minY: " << minY << " minZ: " << minZ << std::endl;
-		std::cout << "maxX: " << maxX << " maxY: " << maxY << " maxZ: " << maxZ << std::endl;
-
 		aveX = sumX / vertexIndices.size();
 		aveY = sumY / vertexIndices.size();
 		aveZ = sumZ / vertexIndices.size();
@@ -204,9 +196,6 @@ public:
 
 		glm::vec3 temp;
 
-		std::cout << "aveX: " << aveX << " aveY: " << aveY << " aveZ: " << aveZ << std::endl;
-
-		std::cout << "scaleX: " << scaleX << " scaleY: " << scaleY << " scaleZ: " << scaleZ << std::endl;
 
 		for (unsigned int i = 0; i < vertexIndices.size(); i++) {
 			unsigned int vertexIndex = vertexIndices[i];
@@ -268,8 +257,7 @@ public:
 			printf("Impossible to open the file !\n");
 			return false;
 		}
-		
-		printf("=== filename : %s ===\n", filename);
+
 
 		while (!feof(objFile)) {
 
@@ -334,11 +322,6 @@ public:
 			}
 		}
 
-
-
-		std::cout << "minX: " << minX << " minY: " << minY << " minZ: " << minZ << std::endl;
-		std::cout << "maxX: " << maxX << " maxY: " << maxY << " maxZ: " << maxZ << std::endl;
-
 		aveX = sumX / vertexIndices.size();
 		aveY = sumY / vertexIndices.size();
 		aveZ = sumZ / vertexIndices.size();
@@ -347,10 +330,6 @@ public:
 		scaleZ = maxZ - minZ;
 
 		glm::vec3 temp;
-
-		std::cout << "aveX: " << aveX << " aveY: " << aveY << " aveZ: " << aveZ << std::endl;
-
-		std::cout << "scaleX: " << scaleX << " scaleY: " << scaleY << " scaleZ: " << scaleZ << std::endl;
 
 		for (unsigned int i = 0; i < vertexIndices.size(); i++) {
 			unsigned int vertexIndex = vertexIndices[i];

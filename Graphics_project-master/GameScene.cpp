@@ -3,6 +3,7 @@
 #include "CannonShot.h"
 #include "DestroyEffect.h"
 #include "LavaMove.h"
+#include "OtherPlayer.h"
 
 
 
@@ -43,9 +44,11 @@ GameScene::GameScene(int num_scene, int* index_list, GLuint* tex, GLuint* vao, G
 
 	p_player->AddComponent<Gravity>();
 	p_player->AddComponent<PlayerJump>();
-
 	
 	// object
+	if (num_scene == 0) {
+		
+	}
 	if (num_scene == 1) {
 		{
 			CreateSkyBox(index_list, tex, vao);
@@ -664,6 +667,22 @@ GameObject* GameScene::CreateBox(int* index_list, GLuint* tex, GLuint* vao) // B
 	box->texture = tex[3]; // 1번 텍스쳐
 
 	return box;
+}
+
+GameObject* GameScene::CreatePlayer(int* index_list, GLuint* tex, GLuint* vao) // Player 생성
+{
+	auto player = CreateEmpty();
+
+	player->AddComponent<Transform3D>();
+	player->AddComponent<OtherPlayer>();
+
+	// render 부분
+	player->modelLocation = modelLocation;
+	player->num_index = index_list[0]; // load() 첫 번째
+	player->VAO = vao[0]; // 사각형 메쉬
+	player->texture = tex[3]; // 1번 텍스쳐
+
+	return player;
 }
 
 GameObject* GameScene::CreateAirBox(int* index_list, GLuint* tex, GLuint* vao) // Box 자동 생성
