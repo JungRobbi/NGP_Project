@@ -26,6 +26,8 @@ class GameData
 public:
 	GameData() { msg = -1; }
 	~GameData() {}
+
+	int GetMsg() { return msg; }
 protected:
 	int msg;
 private:
