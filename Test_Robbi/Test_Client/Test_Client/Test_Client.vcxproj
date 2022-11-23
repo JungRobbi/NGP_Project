@@ -127,6 +127,7 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="GameData.cpp" />
     <ClCompile Include="testClient.cpp" />
   </ItemGroup>
   <ItemGroup>

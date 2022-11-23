@@ -95,11 +95,14 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 		
 		// 데이터 처리
 
-		//std::cout << data->GetMsg() << std::endl;
+		std::cout << data->GetMsg() << std::endl;
 
-		/*switch (data->GetMsg())
+		switch (data->GetMsg())
 		{
 		case MSG_PLAYER_INFO_LOBBY:
+			std::cout << ((PlayerInfoLobby*)data)->GetID() << std::endl;
+			std::cout << ((PlayerInfoLobby*)data)->GetMsg() << std::endl;
+			std::cout << ((PlayerInfoLobby*)data)->GetReady() << std::endl;
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			break;
@@ -117,7 +120,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 			break;
 		default:
 			break;
-		}*/
+		}
 
 		MsgCommandQueue.pop_front();
 		LeaveCriticalSection(&cs);

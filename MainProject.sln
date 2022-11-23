@@ -8,8 +8,14 @@ EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Server", "Server\Server.vcxproj", "{6CC9DBF1-5640-4287-B980-24E5077C761D}"
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_Server", "Test_Robbi\Test_Server\Test_Server\Test_Server.vcxproj", "{122C8933-68C9-49B0-ADDE-DE7D5FADB2BC}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6CC9DBF1-5640-4287-B980-24E5077C761D} = {6CC9DBF1-5640-4287-B980-24E5077C761D}
+	EndProjectSection
 EndProject
 Project("{8BC9CEB8-8B4A-11D0-8D11-00A0C91BC942}") = "Test_Client", "Test_Robbi\Test_Client\Test_Client\Test_Client.vcxproj", "{3A6551E9-54DF-4932-B993-BC18C2F00DF9}"
+	ProjectSection(ProjectDependencies) = postProject
+		{6CC9DBF1-5640-4287-B980-24E5077C761D} = {6CC9DBF1-5640-4287-B980-24E5077C761D}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
