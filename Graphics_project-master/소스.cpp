@@ -340,7 +340,7 @@ void InitTexture()
 		"Resource/green.png", "Resource/yellow.png","Resource/skybox3_top.png", "Resource/skybox3_left.png", "Resource/skybox3_front.png", "Resource/skybox3_right.png",
 		"Resource/skybox3_back.png", "Resource/skybox3_bottom.png", "Resource/Item.png","Resource/GameClear.png","Resource/axe.png","Resource/shoe.png","Resource/Robby.png",
 		"Resource/slime.png" };
-		//20																				
+																			
 	glGenTextures(40, texture); //--- 텍스처 생성
 
 	for (int i = 0; i < 40; ++i) {

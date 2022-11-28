@@ -59,6 +59,10 @@ GameScene::GameScene(int num_scene, int* index_list, GLuint* tex, GLuint* vao, G
 		}
 
 		{
+			auto player = CreatePlayer(index_list, tex, vao);
+		}
+
+		{
 			auto box = CreateAirHardBox(index_list,tex,vao);
 
 			box->GetComponent<Transform3D>()->position = glm::vec3(1.0f, 0.0f, 0.0f);
@@ -675,8 +679,10 @@ GameObject* GameScene::CreatePlayer(int* index_list, GLuint* tex, GLuint* vao) /
 
 	player->AddComponent<Transform3D>();
 	player->AddComponent<OtherPlayer>();
-
 	// render 부분
+	player->GetComponent<OtherPlayer>()->pos = glm::vec3{0.0f, 0.0f, 0.0f};
+	
+	player->GetComponent<Transform3D>()->scale = glm::vec3(0.4f, 0.4f, 0.4f);
 	player->modelLocation = modelLocation;
 	player->num_index = index_list[0]; // load() 첫 번째
 	player->VAO = vao[0]; // 사각형 메쉬

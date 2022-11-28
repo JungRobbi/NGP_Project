@@ -1,9 +1,9 @@
 #include "Scene.h"
-
+#include "OtherPlayer.h"
 #include <algorithm>
 
 Scene* Scene::scene{ nullptr };
-
+extern int Pcolor;
 Scene::Scene()
 {
 	scene = this;
@@ -47,6 +47,7 @@ void Scene::update()
 void Scene::render()
 {
 	for (auto object : Scene::scene->gameObjects) {
+
 		object->render();
 	}
 }
