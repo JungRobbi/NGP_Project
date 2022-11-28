@@ -40,6 +40,7 @@
 
 #include "MSGFunc.h"
 #include "PlayerInfoLobbyFunc.h"
+#include "PlayerInforSceneFunc.h"
 
 char* SERVERIP;
 std::string m_Name;
@@ -241,7 +242,7 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 		sendMSG(sock, TempMSG);
 
 		// 데이터 보내기
-		Vector3 pc {0, 0, 0};
+		Vector3 pc {1, 0, 0};
 		retval = sendPlayerInfoLobby(sock, PlayerInfoLobby{ TempMSG, (char*)m_Name.c_str(), pc });
 		if (retval == -1)
 			break;
@@ -1089,6 +1090,7 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			RecvData = new PlayerInfoLobby{ recvPlayerInfoLobby(sock) };
 			break;
 		case MSG_PLAYER_INFO_SCENE:
+			RecvData = new PlayerInfoScene{ recvPlayerInfoScene(sock) };
 			break;
 		case MSG_CHAT:
 			break;
@@ -1108,7 +1110,6 @@ DWORD WINAPI RecvThread(LPVOID temp)
 
 		Scene::scene->RecvData = RecvData;
 		Scene::scene->RecvMsg = recv_msg;
-
 
 		// data를 여기서 처리해야 함
 
