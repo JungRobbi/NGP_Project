@@ -5,7 +5,7 @@
 #define BUFSIZE    1024
 
 
-std::queue<GameData> MsgCommandQueue;
+std::list<GameData*> MsgCommandQueue;
 
 
 DWORD WINAPI ClientThread(LPVOID arg)

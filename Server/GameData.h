@@ -1,6 +1,6 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
-#include <queue>
+#include <list>
 #include "../Graphics_project-master/Vector3.h"
 
 
