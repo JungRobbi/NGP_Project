@@ -17,7 +17,7 @@ void GameObject::render()
 	auto tr = GetComponent<Transform3D>()->mat_Transform;
 
 	if (GetComponent<OtherPlayer>()) {
-		glUniform4f(Pcolor, GetComponent<OtherPlayer>()->color.x, GetComponent<OtherPlayer>()->color.y, GetComponent<OtherPlayer>()->color.z, 0.0);
+		glUniform4f(Pcolor, 1.0f, GetComponent<OtherPlayer>()->color.y, GetComponent<OtherPlayer>()->color.z, 0.0);
 	}
 	else {
 		glUniform4f(Pcolor, 0.0, 0.0, 0.0, 0.0);
