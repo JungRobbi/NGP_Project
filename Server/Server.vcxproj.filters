@@ -35,6 +35,12 @@
     <ClInclude Include="PlayerLeave.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
+    <ClInclude Include="CollideInfo.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="GameClear.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
     <ClInclude Include="AddBlock.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
