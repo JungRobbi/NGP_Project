@@ -132,9 +132,10 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="CollideInfo.h" />
+    <ClInclude Include="CollideInfo.h" />
+=========
     <ClInclude Include="AddBlock.h" />
     <ClInclude Include="Common.h" />
-    <ClInclude Include="GameClear.h" />
     <ClInclude Include="GameData.h" />
     <ClInclude Include="PlayerInforSceneFunc.h" />
     <ClInclude Include="PlayerLeave.h" />
