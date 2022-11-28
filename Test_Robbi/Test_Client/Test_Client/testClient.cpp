@@ -66,16 +66,8 @@ int main(int argc, char* argv[])
 	// 서버와 데이터 통신
 	while (1) {
 		// 데이터 입력
-		printf("\n[보낼 데이터] ");
-		if (fgets(buf, BUFSIZE + 1, stdin) == NULL)
-			break;
-
-		// '\n' 문자 제거
-		len = (int)strlen(buf);
-		if (buf[len - 1] == '\n')
-			buf[len - 1] = '\0';
-		if (strlen(buf) == 0)
-			break;
+		printf("\nData Send : ");
+		std::cin >> buf;
 
 		// 메세지 보내기
 		GAMEMSG TempMSG = MSG_PLAYER_INFO_LOBBY;
