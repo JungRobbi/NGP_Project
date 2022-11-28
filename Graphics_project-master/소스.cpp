@@ -37,6 +37,7 @@
 #include "DestroyEffect.h"
 
 #include "Common.h"
+#include "../Server/GameData.h"
 
 MCI_OPEN_PARMS m_mciOpenParms;
 MCI_PLAY_PARMS m_mciPlayParms;
@@ -139,6 +140,8 @@ SOCKET sock;
 void SceneChange(int num_scene);
 void ResetChange();
 void NestSceneChange();
+
+std::list<GameData*> MsgCommandQueue; // 메세지 큐
 
 DWORD WINAPI RecvThread(LPVOID temp);
 int main(int argc, char** argv)
@@ -977,7 +980,7 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		retval = recv(sock, (char*)&Data, 52, 0);
 		if (retval == SOCKET_ERROR) err_display("recv()");
 		//
-		//Data MSGť�� �ֱ�
+		MsgCommandQueue.push_back(new GameData{Data})
 		//
 	}
 }
