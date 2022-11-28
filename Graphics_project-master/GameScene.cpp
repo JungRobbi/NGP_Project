@@ -45,6 +45,8 @@ GameScene::GameScene(int num_scene, int* index_list, GLuint* tex, GLuint* vao, G
 	p_player->AddComponent<Gravity>();
 	p_player->AddComponent<PlayerJump>();
 	
+	other_player = CreatePlayer(index_list, tex, vao);
+
 	// object
 	if (num_scene == 0) {
 		
@@ -56,10 +58,6 @@ GameScene::GameScene(int num_scene, int* index_list, GLuint* tex, GLuint* vao, G
 			grass->GetComponent<Transform3D>()->position.y = -0.5;
 			grass->GetComponent<Transform3D>()->scale = glm::vec3(9.0f, 9.0f, 1.0f);
 			grass->texture = tex[5];
-		}
-
-		{
-			auto player = CreatePlayer(index_list, tex, vao);
 		}
 
 		{
@@ -917,6 +915,31 @@ GameObject* GameScene::CreateBall(int* index_list, GLuint* tex, GLuint* vao)
 void GameScene::update()
 {
 	Scene::update();
+
+	switch (RecvMSG) // 메세지 해석
+	{
+	case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
+		strcpy(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoLobby*)RecvData)->GetID());
+		other_player->GetComponent<OtherPlayer>()->color = ((PlayerInfoLobby*)RecvData)->GetReady();
+		break;
+
+	case MSG_PLAYER_INFO_SCENE:
+		break;
+	case MSG_CHAT:
+		break;
+	case MSG_ADD_BLOCK:
+		break;
+	case MSG_COLLIDE:
+		break;
+	case MSG_LEAVE:
+		break;
+	case MSG_GAMECLEAR:
+		break;
+	case MSG_PAUSE:
+		break;
+	default:
+		break;
+	}
 
 	auto player_tran = p_player->GetComponent<Transform3D>();
 	auto player_camera = p_player->GetComponent<Camera>();
