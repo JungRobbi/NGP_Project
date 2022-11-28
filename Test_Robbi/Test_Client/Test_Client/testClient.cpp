@@ -31,6 +31,9 @@ DWORD WINAPI RecvMSGThread(LPVOID arg)
 		// 데이터 받기
 		int retval = recv(sock, data, sizeof(data), 0);
 
+
+		// data를 여기서 처리해야 함
+
 		// 받은 데이터 출력
 		std::cout << "MSG - " << data << std::endl;
 	}
