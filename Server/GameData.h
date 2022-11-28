@@ -100,8 +100,9 @@ public:
 	~S_Collide() {}
 	int GetItem_index() { return item_index; }
 private:
+	char ID[10];
 	int item_index;
-	char padding[42];
+	char padding[32];
 };
 class Leave : public GameData
 {
