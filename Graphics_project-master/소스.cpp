@@ -980,7 +980,7 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		retval = recv(sock, (char*)&Data, 52, 0);
 		if (retval == SOCKET_ERROR) err_display("recv()");
 		//
-		MsgCommandQueue.push_back(new GameData{Data})
+		MsgCommandQueue.push_back(new GameData{ Data });
 		//
 	}
 }

@@ -92,6 +92,9 @@
     <ClCompile Include="LavaMove.cpp">
       <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClCompile>
+    <ClCompile Include="OtherPlayer.cpp">
+      <Filter>소스 파일\System</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="FrameWork.h">
@@ -156,6 +159,9 @@
     </ClInclude>
     <ClInclude Include="Common.h">
       <Filter>소스 파일\Network</Filter>
+    </ClInclude>
+    <ClInclude Include="OtherPlayer.h">
+      <Filter>소스 파일\System</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
