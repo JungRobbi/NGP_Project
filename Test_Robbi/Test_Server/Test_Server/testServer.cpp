@@ -1,6 +1,7 @@
 #include <iostream>
 #include <list>
 #include <string>
+#include <vector>
 
 #include "../../Common.h"
 #include "../../../Server/GameData.h"
