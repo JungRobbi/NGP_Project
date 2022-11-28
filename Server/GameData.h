@@ -1,7 +1,7 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #include <list>
-#include "../Graphics_project-master/Vector3.h"
+#include "Vector3.h"
 
 
 enum GAMEMSG

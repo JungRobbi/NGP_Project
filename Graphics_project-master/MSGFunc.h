@@ -1,6 +1,6 @@
 #pragma once
-#include "../../Common.h"
-#include "../../../Server/GameData.h"
+#include "Common.h"
+#include "GameData.h"
 
 
 void sendMSG(SOCKET sock, GAMEMSG data)

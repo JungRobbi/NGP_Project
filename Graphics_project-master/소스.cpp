@@ -37,7 +37,7 @@
 #include "DestroyEffect.h"
 
 #include "Common.h"
-#include "../Server/GameData.h"
+#include "GameData.h"
 
 #include "MSGFunc.h"
 #include "PlayerInfoLobbyFunc.h"

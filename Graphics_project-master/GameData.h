@@ -1,7 +1,7 @@
 #pragma once
 #define _CRT_SECURE_NO_WARNINGS
 #include <list>
-#include "../Graphics_project-master/Vector3.h"
+#include "Vector3.h"
 
 
 enum GAMEMSG
@@ -37,7 +37,7 @@ class PlayerInfoLobby : public GameData
 {
 public:
 	PlayerInfoLobby() {}
-	PlayerInfoLobby(int datamsg, char* id, char ready);
+	PlayerInfoLobby(int datamsg, char* id, Vector3 ready);
 	~PlayerInfoLobby() {};
 
 	char* GetID() { return ID; }

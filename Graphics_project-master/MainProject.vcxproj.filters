@@ -178,9 +178,6 @@
     <ClInclude Include="GameClear.h">
       <Filter>소스 파일\Server</Filter>
     </ClInclude>
-    <ClInclude Include="GameData.h">
-      <Filter>소스 파일\Server</Filter>
-    </ClInclude>
     <ClInclude Include="PlayerInfoLobbyFunc.h">
       <Filter>소스 파일\Server</Filter>
     </ClInclude>
@@ -188,6 +185,12 @@
       <Filter>소스 파일\Server</Filter>
     </ClInclude>
     <ClInclude Include="PlayerLeave.h">
+      <Filter>소스 파일\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="..\Server\MSGFunc.h">
+      <Filter>소스 파일\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData.h">
       <Filter>소스 파일\Server</Filter>
     </ClInclude>
   </ItemGroup>
