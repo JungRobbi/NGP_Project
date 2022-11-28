@@ -7,7 +7,7 @@ class OtherPlayer : public Component
 {
 public:
 	Vector3 color;
-	glm::vec3 pos;
+	Vector3 pos;
 	char ID[10];
 public:
 

@@ -678,7 +678,7 @@ GameObject* GameScene::CreatePlayer(int* index_list, GLuint* tex, GLuint* vao) /
 	player->AddComponent<Transform3D>();
 	player->AddComponent<OtherPlayer>();
 	// render ºÎºÐ
-	player->GetComponent<OtherPlayer>()->pos = glm::vec3{0.0f, 0.0f, 0.0f};
+	player->GetComponent<OtherPlayer>()->pos = Vector3{0.0f, 0.0f, 0.0f};
 	
 	player->GetComponent<Transform3D>()->scale = glm::vec3(0.4f, 0.4f, 0.4f);
 	player->modelLocation = modelLocation;
@@ -924,6 +924,8 @@ void GameScene::update()
 		break;
 
 	case MSG_PLAYER_INFO_SCENE:
+		if(other_player->GetComponent<OtherPlayer>()->ID==((PlayerInfoScene*)RecvData)->GetID())
+			other_player->GetComponent<OtherPlayer>()->pos = ((PlayerInfoScene*)RecvData)->GetPos();
 		break;
 	case MSG_CHAT:
 		break;

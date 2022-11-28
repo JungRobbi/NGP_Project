@@ -40,6 +40,7 @@
 
 #include "MSGFunc.h"
 #include "PlayerInfoLobbyFunc.h"
+#include "PlayerInforSceneFunc.h"
 
 char* SERVERIP;
 std::string m_Name;
@@ -1089,6 +1090,7 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			RecvData = new PlayerInfoLobby{ recvPlayerInfoLobby(sock) };
 			break;
 		case MSG_PLAYER_INFO_SCENE:
+			RecvData = new PlayerInfoScene{ recvPlayerInfoScene(sock) };
 			break;
 		case MSG_CHAT:
 			break;
