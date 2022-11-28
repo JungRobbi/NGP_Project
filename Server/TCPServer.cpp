@@ -10,7 +10,6 @@
 #include "PlayerInfoLobbyFunc.h"
 
 #define SERVERPORT 9000
-#define BUFSIZE    50
 
 
 std::list<GameData*> MsgCommandQueue{};
@@ -26,7 +25,6 @@ DWORD WINAPI ClientThread(LPVOID arg)
 	struct sockaddr_in clientaddr;
 	char addr[INET_ADDRSTRLEN];
 	int addrlen;
-	char buf[BUFSIZE + 1];
 
 
 	addrlen = sizeof(clientaddr);
@@ -189,8 +187,9 @@ int main(int argc, char* argv[])
 	SOCKET client_sock;
 	struct sockaddr_in clientaddr;
 	int addrlen;
-	int len;
-	char buf[BUFSIZE + 1];
+
+	InitializeCriticalSection(&cs);
+
 	HANDLE hThread;
 	HANDLE hCacul_ExecuteThread;
 
@@ -222,6 +221,7 @@ int main(int argc, char* argv[])
 
 
 	closesocket(listen_sock);
+	DeleteCriticalSection(&cs);
 
 	WSACleanup();
 	return 0;

@@ -198,8 +198,6 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 
 
 	// 데이터 통신에 사용할 변수
-	char buf[BUFSIZE + 1];
-	int len;
 
 	int comm;
 	// 서버와 데이터 통신
@@ -265,7 +263,6 @@ int main(int argc, char** argv)
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
 
-	CreateThread(NULL, 0, RecvThread, NULL, 0, NULL);
 
 	// create window using freeglut
 	glutInit(&argc, argv);
@@ -1078,16 +1075,11 @@ void NestSceneChange()
 DWORD WINAPI RecvThread(LPVOID temp)
 {
 	SOCKET sock = (SOCKET)temp;
-	char data[52];
 	GAMEMSG recv_msg;
 	while (true) {
 		// 메세지 받기
 		recv_msg = recvMSG(sock);
 		printf("받은 메세지 : %d\n", recv_msg);
-		if (recv_msg == NULL) {
-			std::cout << "recv_msg - NULL" << std::endl;
-			break;
-		}
 
 		GameData* RecvData;
 
@@ -1118,7 +1110,8 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		// data를 여기서 처리해야 함
 
 		// 받은 데이터 출력
-		std::cout << "MSG - " << data << std::endl;
+		std::cout << "ID - " << ((PlayerInfoLobby*)RecvData)->GetID() << std::endl;
+		std::cout << "Ready. R - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << std::endl;
 	}
 
 	return 0;
