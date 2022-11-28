@@ -22,9 +22,6 @@ public:
 
 	int obj_number = 0;
 
-	GameData* RecvData;
-	GAMEMSG RecvMSG;
-
 public:
 	GameScene();
 	GameScene(int);

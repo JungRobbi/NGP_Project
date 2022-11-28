@@ -1108,10 +1108,13 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			break;
 		}
 
+<<<<<<< HEAD
 		Scene::scene->RecvData = RecvData;
 		Scene::scene->RecvMsg = recv_msg;
 		//Scene::sock = sock;
 			
+=======
+>>>>>>> parent of 0f031ad (add RecvData, RecvMsg in Scene)
 
 		// data를 여기서 처리해야 함
 

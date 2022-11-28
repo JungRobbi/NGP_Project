@@ -30,9 +30,6 @@ public:
 	GLuint* p_vao;
 	GLuint* p_s_program;
 
-	GameData* RecvData;
-	GAMEMSG RecvMsg;
-
 public:
 	GameObject* CreateEmpty();
 	
