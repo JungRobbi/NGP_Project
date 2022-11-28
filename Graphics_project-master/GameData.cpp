@@ -7,7 +7,7 @@ PlayerInfoLobby::PlayerInfoLobby(int datamsg, char* id, Vector3 ready)
 	msg = datamsg;
 	ready_state = ready;
 	memset(ID, 0, sizeof(ID));
-	strcpy(ID, id);
+	memcpy(ID, id,sizeof(ID));
 }
 
 PlayerInfoScene::PlayerInfoScene(int datasmg, Vector3 pos, char* id)

@@ -33,7 +33,6 @@ private:
 
 
 
-
 class PlayerInfoLobby : public GameData
 {
 public:
@@ -47,7 +46,7 @@ public:
 private:
 	char ID[10];
 	Vector3 ready_state;   // 0:white 1:R 2:G 3:B
-	char padding[34];
+	char padding[24];
 };
 
 class PlayerInfoScene : public GameData

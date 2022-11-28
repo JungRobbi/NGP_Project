@@ -5,7 +5,7 @@
 void sendMSG(SOCKET sock, GAMEMSG data)
 {
 	int retval;
-	retval = send(sock, (char*)&data, sizeof(data), 0);
+	retval = send(sock, (char*)&data,sizeof(4), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 		return;
@@ -14,15 +14,17 @@ void sendMSG(SOCKET sock, GAMEMSG data)
 
 }
 
-GAMEMSG recvMSG(SOCKET sock)
+GameData* recvMSG(SOCKET sock)
 {
 	int retval;
-	GAMEMSG data;
-	retval = recv(sock, (char*)&data, sizeof(data), 0);
-	if (retval == SOCKET_ERROR) {
-		return MSG_LEAVE;
-	}
-	else if (retval == 0) 
-		return MSG_LEAVE;
-	return data;
+	GameData data;
+	retval = recv(sock, (char*)&data, 52, 0);
+	GameData* rdata = new GameData(data);
+	return rdata;
+	//if (retval == SOCKET_ERROR) {
+	//	return ;
+	//}
+	//else if (retval == 0) 
+	//	return ;
+	//return ;
 }
