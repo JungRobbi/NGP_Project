@@ -1,4 +1,5 @@
 #include <iostream>
+#include <string>
 #include <queue>
 
 #include "../../Common.h"
@@ -7,10 +8,12 @@
 #include "MSGFunc.h"
 #include "PlayerInfoLobbyFunc.h"
 
-char* SERVERIP = (char*)"127.0.0.1";
+char* SERVERIP;
+std::string m_Name;
 
 #define SERVERPORT 9000
 #define BUFSIZE    50
+
 
 int main(int argc, char* argv[])
 {
@@ -24,11 +27,30 @@ int main(int argc, char* argv[])
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
 
+
+	std::cout << std::endl << " ======== Login ======== " << std::endl << std::endl;
+	while (true) {
+		std::cout << std::endl << "사용 할 닉네임을 입력해주세요. (10자 이내) : ";
+		std::cin >> m_Name;
+		if (m_Name.size() > 10)
+			std::cout << "닉네임은 영문 10자 이상으로 할 수 없습니다." << std::endl;
+		else
+			break;
+	}
+	std::cout << std::endl << "접속 할 서버주소를 입력해주세요(ex 197.xxx.xxx.xxx) : ";
+	std::string server_s;
+	std::cin >> server_s;
+
+	SERVERIP = new char[server_s.size() + 1];
+	SERVERIP[server_s.size()] = '\0';
+	strcpy(SERVERIP, server_s.c_str());
+
 	// 소켓 생성
 	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock == INVALID_SOCKET) err_quit("socket()");
 
 	// connect()
+
 	struct sockaddr_in serveraddr;
 	memset(&serveraddr, 0, sizeof(serveraddr));
 	serveraddr.sin_family = AF_INET;

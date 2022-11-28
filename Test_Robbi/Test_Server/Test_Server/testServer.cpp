@@ -32,7 +32,6 @@ DWORD WINAPI ClientThread(LPVOID arg)
 	while (1) {
 		// 메세지 받기
 		GAMEMSG recv_msg = recvMSG(client_sock);
-		printf("[TCP/%s:%d] %d\n", addr, ntohs(clientaddr.sin_port), recv_msg);
 
 		// 메세지 해석 -> 데이터 받기 -> 메세지 큐에 입력
 		
