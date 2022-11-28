@@ -30,6 +30,9 @@
     <Filter Include="소스 파일\Network">
       <UniqueIdentifier>{0c44243a-b379-4010-9751-62b1a8703dff}</UniqueIdentifier>
     </Filter>
+    <Filter Include="소스 파일\Server">
+      <UniqueIdentifier>{4eacdd3a-5358-457c-bd87-2ffad6f9a182}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Framework.cpp">
@@ -94,6 +97,9 @@
     </ClCompile>
     <ClCompile Include="OtherPlayer.cpp">
       <Filter>소스 파일\System</Filter>
+    </ClCompile>
+    <ClCompile Include="GameData.cpp">
+      <Filter>소스 파일\Server</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -162,6 +168,27 @@
     </ClInclude>
     <ClInclude Include="OtherPlayer.h">
       <Filter>소스 파일\System</Filter>
+    </ClInclude>
+    <ClInclude Include="AddBlock.h">
+      <Filter>소스 파일\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="CollideInfo.h">
+      <Filter>소스 파일\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="GameClear.h">
+      <Filter>소스 파일\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="GameData.h">
+      <Filter>소스 파일\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfoLobbyFunc.h">
+      <Filter>소스 파일\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInforSceneFunc.h">
+      <Filter>소스 파일\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerLeave.h">
+      <Filter>소스 파일\Server</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

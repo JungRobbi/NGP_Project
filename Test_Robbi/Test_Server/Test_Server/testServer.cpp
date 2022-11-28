@@ -104,7 +104,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 		case MSG_PLAYER_INFO_LOBBY:
 			std::cout << "MSG_PLAYER_INFO_LOBBY" << std::endl;
 			std::cout << ((PlayerInfoLobby*)data)->GetID() << std::endl;
-			std::cout << ((PlayerInfoLobby*)data)->GetReady() << std::endl << std::endl;
+			std::cout << ((PlayerInfoLobby*)data)->GetReady().x << std::endl << std::endl;
 
 			break;
 		case MSG_PLAYER_INFO_SCENE:

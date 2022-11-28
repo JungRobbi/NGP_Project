@@ -37,7 +37,7 @@ class PlayerInfoLobby : public GameData
 {
 public:
 	PlayerInfoLobby() {}
-	PlayerInfoLobby(int datamsg, char* id, Vector3 ready);
+	PlayerInfoLobby(int datamsg, char* id, char ready);
 	~PlayerInfoLobby() {};
 
 	char* GetID() { return ID; }
