@@ -187,7 +187,7 @@
     <ClInclude Include="PlayerLeave.h">
       <Filter>소스 파일\Server</Filter>
     </ClInclude>
-    <ClInclude Include="..\Server\MSGFunc.h">
+    <ClInclude Include="MSGFunc.h">
       <Filter>소스 파일\Server</Filter>
     </ClInclude>
     <ClInclude Include="GameData.h">

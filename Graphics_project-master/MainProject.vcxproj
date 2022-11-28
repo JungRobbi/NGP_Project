@@ -169,7 +169,6 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="..\Server\MSGFunc.h" />
     <ClInclude Include="AddBlock.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CannonShot.h" />
@@ -192,6 +191,7 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="ItemRotate.h" />
     <ClInclude Include="LavaMove.h" />
+    <ClInclude Include="MSGFunc.h" />
     <ClInclude Include="ObjRead.h" />
     <ClInclude Include="OtherPlayer.h" />
     <ClInclude Include="Output.h" />
