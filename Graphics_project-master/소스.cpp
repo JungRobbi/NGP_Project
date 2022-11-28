@@ -40,6 +40,7 @@
 
 #include "MSGFunc.h"
 #include "PlayerInfoLobbyFunc.h"
+#include "PlayerInforSceneFunc.h"
 
 char* SERVERIP;
 std::string m_Name;
@@ -1089,6 +1090,7 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			RecvData = new PlayerInfoLobby{ recvPlayerInfoLobby(sock) };
 			break;
 		case MSG_PLAYER_INFO_SCENE:
+			RecvData = new PlayerInfoScene{ recvPlayerInfoScene(sock) };
 			break;
 		case MSG_CHAT:
 			break;
@@ -1106,6 +1108,13 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			break;
 		}
 
+<<<<<<< HEAD
+		Scene::scene->RecvData = RecvData;
+		Scene::scene->RecvMsg = recv_msg;
+		//Scene::sock = sock;
+			
+=======
+>>>>>>> parent of 0f031ad (add RecvData, RecvMsg in Scene)
 
 		// data를 여기서 처리해야 함
 
