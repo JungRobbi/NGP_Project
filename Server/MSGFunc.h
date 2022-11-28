@@ -2,7 +2,6 @@
 #include "Common.h"
 #include "GameData.h"
 
-
 void sendMSG(SOCKET sock, GAMEMSG data)
 {
 	int retval;
@@ -20,5 +19,10 @@ GAMEMSG recvMSG(SOCKET sock)
 	int retval;
 	GAMEMSG data;
 	retval = recv(sock, (char*)&data, sizeof(data), 0);
+	if (retval == SOCKET_ERROR) {
+		return MSG_LEAVE;
+	}
+	else if (retval == 0) 
+		return MSG_LEAVE;
 	return data;
 }

@@ -23,6 +23,7 @@ public:
 	~GameData() {}
 
 	int GetMsg() { return msg; }
+	void SetMsg(int input) { msg = input; }
 protected:
 	int msg;
 private:

@@ -2,6 +2,7 @@
 #include <list>
 #include <string>
 #include <vector>
+#include <algorithm>
 
 #include "Common.h"
 #include "GameData.h"
@@ -13,7 +14,7 @@
 
 
 std::list<GameData*> MsgCommandQueue{};
-std::vector<SOCKET*> ClientSockList{};
+std::list<SOCKET*> ClientSockList{};
 CRITICAL_SECTION cs;
 
 DWORD WINAPI ClientThread(LPVOID arg)
@@ -35,13 +36,25 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		// 메세지 받기
 		GAMEMSG recv_msg = recvMSG(client_sock);
 
+		if (recv_msg == MSG_LEAVE) {
+			std::cout << "MSG_LEAVE1 == " << std::endl;
+			break;
+		}
+		if (recv_msg == -1) {
+			std::cout << "SOCKET_ERROR == " << std::endl;
+			break;
+		}
 		// 메세지 해석 -> 데이터 받기 -> 메세지 큐에 입력
+
+		GameData* gamedata{};
 
 		EnterCriticalSection(&cs);
 		switch (recv_msg) // 메세지 해석
 		{
 		case MSG_PLAYER_INFO_LOBBY:  // 데이터 받고 큐에 입력
-			MsgCommandQueue.emplace_back(new PlayerInfoLobby{ recvPlayerInfoLobby(client_sock) });
+			gamedata = new PlayerInfoLobby{ recvPlayerInfoLobby(client_sock) };
+			if (gamedata->GetMsg() == MSG_LEAVE) break;
+			MsgCommandQueue.push_back(gamedata);
 			if (m_Name.empty())
 				m_Name = ((PlayerInfoLobby*)MsgCommandQueue.back())->GetID();
 
@@ -55,16 +68,20 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		case MSG_COLLIDE:
 			break;
 		case MSG_LEAVE:
+			std::cout << "MSG_LEAVE2 === " << std::endl;
 			break;
 		case MSG_GAMECLEAR:
 			break;
 		case MSG_PAUSE:
 			break;
 		default:
+			gamedata = new GameData();
 			break;
 		}
 		LeaveCriticalSection(&cs);
 
+		if (gamedata->GetMsg() == MSG_LEAVE)
+			break;
 
 		//// 메세지 보내기
 		////GAMEMSG TempMSG = MSG_PLAYER_INFO_LOBBY;
@@ -77,6 +94,7 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		//	break;
 	}
 
+	ClientSockList.remove_if([&client_sock](SOCKET* a) { return (*a) == client_sock; });
 	closesocket(client_sock);
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
 

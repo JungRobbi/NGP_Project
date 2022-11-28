@@ -20,5 +20,7 @@ PlayerInfoLobby recvPlayerInfoLobby(SOCKET sock)
 	int retval;
 	PlayerInfoLobby data;
 	retval = recv(sock, (char*)&data, sizeof(data), 0);
+	if (retval == 0) 
+		data.SetMsg(MSG_LEAVE);
 	return data;
 }
