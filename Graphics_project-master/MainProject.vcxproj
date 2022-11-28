@@ -141,6 +141,7 @@
     <ClCompile Include="Component.cpp" />
     <ClCompile Include="DestroyEffect.cpp" />
     <ClCompile Include="Framework.cpp" />
+    <ClCompile Include="GameData.cpp" />
     <ClCompile Include="GameObject.cpp" />
     <ClCompile Include="GameScene.cpp">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -168,13 +169,17 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="AddBlock.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CannonShot.h" />
     <ClInclude Include="Collide.h" />
+    <ClInclude Include="CollideInfo.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="Component.h" />
     <ClInclude Include="DestroyEffect.h" />
     <ClInclude Include="FrameWork.h" />
+    <ClInclude Include="GameClear.h" />
+    <ClInclude Include="GameData.h" />
     <ClInclude Include="GameObject.h" />
     <ClInclude Include="GameScene.h">
       <ExcludedFromBuild Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">false</ExcludedFromBuild>
@@ -186,10 +191,14 @@
     <ClInclude Include="Input.h" />
     <ClInclude Include="ItemRotate.h" />
     <ClInclude Include="LavaMove.h" />
+    <ClInclude Include="MSGFunc.h" />
     <ClInclude Include="ObjRead.h" />
     <ClInclude Include="OtherPlayer.h" />
     <ClInclude Include="Output.h" />
+    <ClInclude Include="PlayerInfoLobbyFunc.h" />
+    <ClInclude Include="PlayerInforSceneFunc.h" />
     <ClInclude Include="PlayerJump.h" />
+    <ClInclude Include="PlayerLeave.h" />
     <ClInclude Include="Scene.h" />
     <ClInclude Include="stdafx.h" />
     <ClInclude Include="Time.h" />

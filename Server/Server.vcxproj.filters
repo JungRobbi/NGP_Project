@@ -38,10 +38,13 @@
     <ClInclude Include="CollideInfo.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="GameClear.h">
+    <ClInclude Include="AddBlock.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="AddBlock.h">
+    <ClInclude Include="MSGFunc.h">
+      <Filter>헤더 파일</Filter>
+    </ClInclude>
+    <ClInclude Include="PlayerInfoLobbyFunc.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

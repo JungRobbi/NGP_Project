@@ -135,6 +135,8 @@
     <ClInclude Include="AddBlock.h" />
     <ClInclude Include="Common.h" />
     <ClInclude Include="GameData.h" />
+    <ClInclude Include="MSGFunc.h" />
+    <ClInclude Include="PlayerInfoLobbyFunc.h" />
     <ClInclude Include="PlayerInforSceneFunc.h" />
     <ClInclude Include="PlayerLeave.h" />
   </ItemGroup>

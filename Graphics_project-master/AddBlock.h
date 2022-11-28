@@ -2,23 +2,21 @@
 #include "Common.h"
 #include "GameData.h"
 
-
-int sendPlayerInfoLobby(SOCKET sock, PlayerInfoLobby data)
+void sendAddBlock(SOCKET sock, AddBlock data)
 {
 	int retval;
 	retval = send(sock, (char*)&data, sizeof(data), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
-		return -1;
-	}
-	return retval;
 
+		return;
+	}
 }
 
-PlayerInfoLobby recvPlayerInfoLobby(SOCKET sock)
+AddBlock recvAddBlock(SOCKET sock)
 {
 	int retval;
-	PlayerInfoLobby data;
+	AddBlock data;
 	retval = recv(sock, (char*)&data, sizeof(data), 0);
 	return data;
 }

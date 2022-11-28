@@ -1,24 +1,25 @@
 #pragma once
+
 #include "Common.h"
 #include "GameData.h"
 
 
-int sendPlayerInfoLobby(SOCKET sock, PlayerInfoLobby data)
+void sendCollideInfo(SOCKET sock, S_Collide data)
 {
 	int retval;
 	retval = send(sock, (char*)&data, sizeof(data), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
-		return -1;
+		return;
 	}
-	return retval;
+
 
 }
 
-PlayerInfoLobby recvPlayerInfoLobby(SOCKET sock)
+PlayerInfoScene recvCollideInfo(SOCKET sock)
 {
 	int retval;
-	PlayerInfoLobby data;
+	PlayerInfoScene data;
 	retval = recv(sock, (char*)&data, sizeof(data), 0);
 	return data;
 }
