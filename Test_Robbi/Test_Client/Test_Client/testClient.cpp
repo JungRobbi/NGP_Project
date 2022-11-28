@@ -14,13 +14,29 @@ std::string m_Name;
 #define SERVERPORT 9000
 #define BUFSIZE    50
 
-struct Player
+DWORD WINAPI RecvMSGThread(LPVOID arg)
 {
-	char ID[10];
-	char ready_state;   // 0:white 1:R 2:G 3:B
-	char padding[34];
-};
+	SOCKET sock = (SOCKET)arg;
+	char data[52];
+	GAMEMSG recv_msg;
+	while (true) {
+		// 메세지 받기
+		recv_msg = recvMSG(sock);
+		printf("받은 메세지 : %d\n", recv_msg);
+		if (recv_msg == NULL) {
+			std::cout << "recv_msg - NULL" << std::endl;
+			break;
+		}
 
+		// 데이터 받기
+		int retval = recv(sock, data, sizeof(data), 0);
+
+		// 받은 데이터 출력
+		std::cout << "MSG - " << data << std::endl;
+	}
+
+	return 0;
+}
 
 int main(int argc, char* argv[])
 {
@@ -65,6 +81,13 @@ int main(int argc, char* argv[])
 	serveraddr.sin_port = htons(SERVERPORT);
 	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR) err_quit("connect()");
+
+
+	HANDLE hThread;
+
+	hThread = CreateThread(NULL, 0, RecvMSGThread, (LPVOID)sock, 0, NULL);
+	CloseHandle(hThread);
+
 
 	// 데이터 통신에 사용할 변수
 	char buf[BUFSIZE + 1];
@@ -117,17 +140,17 @@ int main(int argc, char* argv[])
 		if (retval == -1)
 			break;
 
-		// 메세지 받기
-		GAMEMSG recv_msg = recvMSG(sock);
-		printf("받은 메세지 : %d\n",recv_msg);
+		//// 메세지 받기
+		//GAMEMSG recv_msg = recvMSG(sock);
+		//printf("받은 메세지 : %d\n",recv_msg);
 
-		// 데이터 받기
-		PlayerInfoLobby tempInfo{ recvPlayerInfoLobby(sock) };
+		//// 데이터 받기
+		//PlayerInfoLobby tempInfo{ recvPlayerInfoLobby(sock) };
 
-		// 받은 데이터 출력
-		std::cout << "MSG - " << tempInfo.GetMsg() << std::endl;
-		std::cout << "ID - " << tempInfo.GetID() << std::endl;
-		std::cout << "READY - " << tempInfo.GetReady() << std::endl;
+		//// 받은 데이터 출력
+		//std::cout << "MSG - " << tempInfo.GetMsg() << std::endl;
+		//std::cout << "ID - " << tempInfo.GetID() << std::endl;
+		//std::cout << "READY - " << tempInfo.GetReady() << std::endl;
 	}
 
 	// 소켓 닫기

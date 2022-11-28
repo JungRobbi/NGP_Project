@@ -12,8 +12,8 @@
 #define BUFSIZE    50
 
 
-std::list<GameData*> MsgCommandQueue;
-
+std::list<GameData*> MsgCommandQueue{};
+std::vector<SOCKET*> ClientSockList{};
 CRITICAL_SECTION cs;
 
 
@@ -22,6 +22,7 @@ DWORD WINAPI ClientThread(LPVOID arg)
 	std::string m_Name;
 	int retval;
 	SOCKET client_sock = (SOCKET)arg;
+	ClientSockList.push_back(&client_sock);
 	struct sockaddr_in clientaddr;
 	char addr[INET_ADDRSTRLEN];
 	int addrlen;
@@ -45,7 +46,7 @@ DWORD WINAPI ClientThread(LPVOID arg)
 			MsgCommandQueue.emplace_back(new PlayerInfoLobby{ recvPlayerInfoLobby(client_sock) });
 			if (m_Name.empty())
 				m_Name = ((PlayerInfoLobby*)MsgCommandQueue.back())->GetID();
-		
+
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			break;
@@ -67,15 +68,15 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		LeaveCriticalSection(&cs);
 		
 
-		// 메세지 보내기
-		//GAMEMSG TempMSG = MSG_PLAYER_INFO_LOBBY;
-		sendMSG(client_sock, recv_msg);
+		//// 메세지 보내기
+		////GAMEMSG TempMSG = MSG_PLAYER_INFO_LOBBY;
+		//sendMSG(client_sock, recv_msg);
 
-		// 데이터 보내기
-		char pc = 'R';
-		retval = sendPlayerInfoLobby(client_sock, PlayerInfoLobby{ recv_msg, (char*)m_Name.c_str(), pc });
-		if (retval == -1)
-			break;
+		//// 데이터 보내기
+		//char pc = 'R';
+		//retval = sendPlayerInfoLobby(client_sock, PlayerInfoLobby{ recv_msg, (char*)m_Name.c_str(), pc });
+		//if (retval == -1)
+		//	break;
 	}
 
 	closesocket(client_sock);
@@ -87,7 +88,7 @@ DWORD WINAPI ClientThread(LPVOID arg)
 DWORD WINAPI Cacul_Execute(LPVOID arg)
 {
 	while (1) {
-		if (MsgCommandQueue.empty())
+		if (MsgCommandQueue.empty() || ClientSockList.empty())
 			continue;
 
 		EnterCriticalSection(&cs);
@@ -123,6 +124,36 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 			break;
 		}
 
+		switch (data->GetMsg())
+		{
+		case MSG_PLAYER_INFO_LOBBY:
+			for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
+				sendMSG(*(*p), MSG_PLAYER_INFO_LOBBY);
+
+				// 데이터 보내기
+				int retval = sendPlayerInfoLobby(*(*p), PlayerInfoLobby{ data->GetMsg(), ((PlayerInfoLobby*)data)->GetID(), ((PlayerInfoLobby*)data)->GetReady() });
+				if (retval == -1)
+					break;
+			}
+			break;
+		case MSG_PLAYER_INFO_SCENE:
+			break;
+		case MSG_CHAT:
+			break;
+		case MSG_ADD_BLOCK:
+			break;
+		case MSG_COLLIDE:
+			break;
+		case MSG_LEAVE:
+			break;
+		case MSG_GAMECLEAR:
+			break;
+		case MSG_PAUSE:
+			break;
+		default:
+			break;
+		}
+	
 		MsgCommandQueue.pop_front();
 		LeaveCriticalSection(&cs);
 	}
