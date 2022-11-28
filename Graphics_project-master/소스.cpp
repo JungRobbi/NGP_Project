@@ -114,7 +114,7 @@ int n_max_model = 4;
 int widthImage, heightImage, numberOfChannel = 0;
 
 // 게임 변수
-int num_ob = 10;
+int num_ob = 6;//10;
 
 int game = 0;					// 게임 state
 
@@ -387,7 +387,7 @@ void InitBuffer_bind(const int street) {
 		num_shape_list[Shoes] = obj.loadObj_normalize_center_4f("Resource/Shoe.obj");
 		bb = &BoundBox[Shoes];
 	}
-	else if (street == 6) {
+	/*else if (street == 6) {
 		num_shape_list[Cannon] = obj.loadObj_normalize_center_4f("Resource/Cannon.obj");
 		bb = &BoundBox[Cannon];
 	}
@@ -403,7 +403,7 @@ void InitBuffer_bind(const int street) {
 	else if (street == 9) {
 		num_shape_list[Spike] = obj.loadObj_normalize_center_4f("Resource/spike.obj");
 		bb = &BoundBox[Spike];
-	}
+	}*/
 
 	if (bb) {
 		bb->maxX = obj.maxX;
