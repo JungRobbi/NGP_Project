@@ -28,8 +28,31 @@ DWORD WINAPI RecvMSGThread(LPVOID arg)
 			break;
 		}
 
-		// 데이터 받기
-		int retval = recv(sock, data, sizeof(data), 0);
+		GameData* RecvData;
+
+		switch (recv_msg) // 메세지 해석
+		{
+		case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
+			RecvData = new PlayerInfoLobby{ recvPlayerInfoLobby(sock) };
+			break;
+		case MSG_PLAYER_INFO_SCENE:
+			break;
+		case MSG_CHAT:
+			break;
+		case MSG_ADD_BLOCK:
+			break;
+		case MSG_COLLIDE:
+			break;
+		case MSG_LEAVE:
+			break;
+		case MSG_GAMECLEAR:
+			break;
+		case MSG_PAUSE:
+			break;
+		default:
+			break;
+		}
+	
 
 		// data를 여기서 처리해야 함
 
