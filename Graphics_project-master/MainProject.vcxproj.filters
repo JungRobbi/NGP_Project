@@ -163,9 +163,6 @@
     <ClInclude Include="LavaMove.h">
       <Filter>소스 파일\Framework\GameComponents</Filter>
     </ClInclude>
-    <ClInclude Include="Common.h">
-      <Filter>소스 파일\Network</Filter>
-    </ClInclude>
     <ClInclude Include="OtherPlayer.h">
       <Filter>소스 파일\System</Filter>
     </ClInclude>
@@ -178,6 +175,12 @@
     <ClInclude Include="GameClear.h">
       <Filter>소스 파일\Server</Filter>
     </ClInclude>
+    <ClInclude Include="GameData.h">
+      <Filter>소스 파일\Server</Filter>
+    </ClInclude>
+    <ClInclude Include="MSGFunc.h">
+      <Filter>소스 파일\Server</Filter>
+    </ClInclude>
     <ClInclude Include="PlayerInfoLobbyFunc.h">
       <Filter>소스 파일\Server</Filter>
     </ClInclude>
@@ -187,11 +190,8 @@
     <ClInclude Include="PlayerLeave.h">
       <Filter>소스 파일\Server</Filter>
     </ClInclude>
-    <ClInclude Include="MSGFunc.h">
-      <Filter>소스 파일\Server</Filter>
-    </ClInclude>
-    <ClInclude Include="GameData.h">
-      <Filter>소스 파일\Server</Filter>
+    <ClInclude Include="Common.h">
+      <Filter>소스 파일\Network</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
