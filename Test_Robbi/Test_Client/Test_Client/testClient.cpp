@@ -14,6 +14,13 @@ std::string m_Name;
 #define SERVERPORT 9000
 #define BUFSIZE    50
 
+struct Player
+{
+	char ID[10];
+	char ready_state;   // 0:white 1:R 2:G 3:B
+	char padding[34];
+};
+
 
 int main(int argc, char* argv[])
 {
@@ -63,40 +70,64 @@ int main(int argc, char* argv[])
 	char buf[BUFSIZE + 1];
 	int len;
 
+	int comm;
 	// 서버와 데이터 통신
 	while (1) {
 		// 데이터 입력
 		printf("\nData Send : ");
-		std::cin >> buf;
+		std::cin >> comm;
 
 		// 메세지 보내기
-		GAMEMSG TempMSG = MSG_PLAYER_INFO_LOBBY;
+		GAMEMSG TempMSG;
+
+		switch (comm)
+		{
+		case MSG_PLAYER_INFO_LOBBY:
+			TempMSG = MSG_PLAYER_INFO_LOBBY;
+			break;
+		case MSG_PLAYER_INFO_SCENE:
+			TempMSG = MSG_PLAYER_INFO_SCENE;
+			break;
+		case MSG_CHAT:
+			TempMSG = MSG_CHAT;
+			break;
+		case MSG_ADD_BLOCK:
+			TempMSG = MSG_ADD_BLOCK;
+			break;
+		case MSG_COLLIDE:
+			TempMSG = MSG_COLLIDE;
+			break;
+		case MSG_LEAVE:
+			TempMSG = MSG_LEAVE;
+			break;
+		case MSG_GAMECLEAR:
+			TempMSG = MSG_GAMECLEAR;
+			break;
+		case MSG_PAUSE:
+			TempMSG = MSG_PAUSE;
+			break;
+		default:
+			break;
+		}
 		sendMSG(sock, TempMSG);
 
 		// 데이터 보내기
-		char* pstr = (char*)"123";
-		char pc = 'q';
-		retval = sendPlayerInfoLobby(sock, PlayerInfoLobby{ TempMSG, pstr, pc });
+		char pc = 'R';
+		retval = sendPlayerInfoLobby(sock, PlayerInfoLobby{ TempMSG, (char*)m_Name.c_str(), pc});
 		if (retval == -1)
 			break;
 
-		//// 메세지 받기
-		//GAMEMSG recv_msg = recvMSG(sock);
-		//printf("받은 메세지 : %d\n",recv_msg);
+		// 메세지 받기
+		GAMEMSG recv_msg = recvMSG(sock);
+		printf("받은 메세지 : %d\n",recv_msg);
 
-		//// 데이터 받기
-		//retval = recv(sock, buf, retval, MSG_WAITALL);
-		//if (retval == SOCKET_ERROR) {
-		//	err_display("recv()");
-		//	break;
-		//}
-		//else if (retval == 0)
-		//	break;
+		// 데이터 받기
+		PlayerInfoLobby tempInfo{ recvPlayerInfoLobby(sock) };
 
-		//// 받은 데이터 출력
-		//buf[retval] = '\0';
-		//printf("[TCP 클라이언트] %d바이트를 받았습니다.\n", retval);
-		//printf("[받은 데이터] %s\n", buf);
+		// 받은 데이터 출력
+		std::cout << "MSG - " << tempInfo.GetMsg() << std::endl;
+		std::cout << "ID - " << tempInfo.GetID() << std::endl;
+		std::cout << "READY - " << tempInfo.GetReady() << std::endl;
 	}
 
 	// 소켓 닫기
