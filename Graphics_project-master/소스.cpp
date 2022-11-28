@@ -242,7 +242,7 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 		sendMSG(sock, TempMSG);
 
 		// 데이터 보내기
-		Vector3 pc {0, 0, 0};
+		Vector3 pc {1, 0, 0};
 		retval = sendPlayerInfoLobby(sock, PlayerInfoLobby{ TempMSG, (char*)m_Name.c_str(), pc });
 		if (retval == -1)
 			break;

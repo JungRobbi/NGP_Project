@@ -5,7 +5,6 @@
 #include "LavaMove.h"
 #include "OtherPlayer.h"
 
-
 GameScene::GameScene() : Scene()
 {
 
@@ -918,9 +917,13 @@ void GameScene::update()
 	switch (RecvMSG) // 메세지 해석
 	{
 	case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
+		std::cout <<"받다";
+		
 		strcpy(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoLobby*)RecvData)->GetID());
+		std::cout << other_player->GetComponent<OtherPlayer>()->ID << std::endl;
+
 		other_player->GetComponent<OtherPlayer>()->color = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
-		break;
+		break;                                                                                                                                                                                                              
 
 	case MSG_PLAYER_INFO_SCENE:
 		if(other_player->GetComponent<OtherPlayer>()->ID==((PlayerInfoScene*)RecvData)->GetID())
