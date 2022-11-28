@@ -4,7 +4,6 @@
 #include "DestroyEffect.h"
 #include "LavaMove.h"
 #include "OtherPlayer.h"
-#include "PlayerInforSceneFunc.h"
 
 
 GameScene::GameScene() : Scene()

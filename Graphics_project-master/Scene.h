@@ -18,7 +18,6 @@ class Scene
 
 public:
 	static Scene* scene;
-	static SOCKET sock;
 
 	GameObject* p_player;
 	GameObject* other_player;

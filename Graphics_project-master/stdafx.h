@@ -9,4 +9,3 @@ enum ShapeTag { Cube, Star, Plane, Pickaxe, Grass, Shoes, Cannon, Ball, Book, Sp
 #include <list>
 #include <algorithm>
 #include "GameData.h"
-#include "Common.h"
