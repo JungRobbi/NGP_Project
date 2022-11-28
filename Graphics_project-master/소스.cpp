@@ -178,7 +178,7 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 	strcpy(SERVERIP, server_s.c_str());
 
 	// 소켓 생성
-	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+	sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock == INVALID_SOCKET) err_quit("socket()");
 
 	// connect()
@@ -1074,7 +1074,7 @@ void NestSceneChange()
 
 DWORD WINAPI RecvThread(LPVOID temp)
 {
-	SOCKET sock = (SOCKET)temp;
+	//SOCKET sock = (SOCKET)temp;
 	GAMEMSG recv_msg;
 	while (true) {
 		// 메세지 받기

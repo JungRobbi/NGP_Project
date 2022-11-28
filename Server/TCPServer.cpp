@@ -33,7 +33,7 @@ DWORD WINAPI ClientThread(LPVOID arg)
 	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
 
 	while (1) {
-		// 메세지 받기	
+
 		char buf[52];
 		retval = recv(client_sock, buf, 52, 0);
 		int msg;
