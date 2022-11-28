@@ -36,7 +36,6 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		// 메세지 받기	
 		char buf[52];
 		retval = recv(client_sock, buf, 52, 0);
-		//char minibuf[4];
 		int msg;
 		memcpy(&msg, buf, 4);
 	

@@ -239,7 +239,6 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 		default:
 			break;
 		}
-		sendMSG(sock, TempMSG);
 
 		// 데이터 보내기
 		Vector3 pc {1, 0, 0};
