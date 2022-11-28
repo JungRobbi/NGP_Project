@@ -1106,6 +1106,9 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			break;
 		}
 
+		Scene::scene->RecvData = RecvData;
+		Scene::scene->RecvMsg = recv_msg;
+
 
 		// data를 여기서 처리해야 함
 
