@@ -172,6 +172,10 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 	std::cout << std::endl << "접속 할 서버주소를 입력해주세요(ex 197.xxx.xxx.xxx) : ";
 	std::string server_s;
 	std::cin >> server_s;
+	Vector3 color{ 0, 0, 0 };
+	std::cout << std::endl << "사용 할 색상을 입력해주세요 ( float 3개 ) : ";
+	std::cin >> color.x >> color.y >> color.z;
+	
 
 	SERVERIP = new char[server_s.size() + 1];
 	SERVERIP[server_s.size()] = '\0';
@@ -214,6 +218,9 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 		{
 		case MSG_PLAYER_INFO_LOBBY:
 			TempMSG = MSG_PLAYER_INFO_LOBBY;
+			retval = sendPlayerInfoLobby(sock, PlayerInfoLobby{ TempMSG, (char*)m_Name.c_str(), color });
+			if (retval == -1)
+				break;
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			TempMSG = MSG_PLAYER_INFO_SCENE;
@@ -241,10 +248,8 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 		}
 
 		// 데이터 보내기
-		Vector3 pc {1, 0, 0};
-		retval = sendPlayerInfoLobby(sock, PlayerInfoLobby{ TempMSG, (char*)m_Name.c_str(), pc });
-		if (retval == -1)
-			break;
+		
+		
 
 	}
 

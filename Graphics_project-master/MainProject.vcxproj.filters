@@ -193,5 +193,8 @@
     <ClInclude Include="Common.h">
       <Filter>소스 파일\Network</Filter>
     </ClInclude>
+    <ClInclude Include="..\Server\Common.h">
+      <Filter>소스 파일\Server</Filter>
+    </ClInclude>
   </ItemGroup>
 </Project>

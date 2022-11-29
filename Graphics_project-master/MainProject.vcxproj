@@ -169,6 +169,7 @@
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
+    <ClInclude Include="..\Server\Common.h" />
     <ClInclude Include="AddBlock.h" />
     <ClInclude Include="Camera.h" />
     <ClInclude Include="CannonShot.h" />
