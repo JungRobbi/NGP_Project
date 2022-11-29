@@ -4,6 +4,9 @@
 #include "DestroyEffect.h"
 #include "LavaMove.h"
 #include "OtherPlayer.h"
+#include "PlayerInforSceneFunc.h"
+extern SOCKET sock;
+extern std::string m_Name;
 
 extern std::string m_Name;
 
@@ -679,7 +682,8 @@ GameObject* GameScene::CreatePlayer(int* index_list, GLuint* tex, GLuint* vao) /
 	player->AddComponent<OtherPlayer>();
 	// render 부분
 	player->GetComponent<OtherPlayer>()->pos = glm::vec3{0.0f, 0.0f, 0.0f};
-	
+	player->GetComponent<OtherPlayer>()->color = glm::vec3{ 0.0f, 0.0f, 0.0f };
+
 	player->GetComponent<Transform3D>()->scale = glm::vec3(0.4f, 0.4f, 0.4f);
 	player->modelLocation = modelLocation;
 	player->num_index = index_list[0]; // load() 첫 번째
@@ -916,6 +920,9 @@ void GameScene::update()
 {
 	Scene::update();
 	//sendPlayerInfoScene(sock, PlayerInfoScene{ MSG_PLAYER_INFO_SCENE, Vector3{p_player->GetComponent<Transform3D>()->position.x,p_player->GetComponent<Transform3D>()->position.y,p_player->GetComponent<Transform3D>()->position.z }, (char*)"asdf" });
+	switch (RecvMsg) // 메세지 해석
+	if(n_scene>=1)
+		sendPlayerInfoScene(sock, PlayerInfoScene{ MSG_PLAYER_INFO_SCENE, Vector3{p_player->GetComponent<Transform3D>()->position.x,p_player->GetComponent<Transform3D>()->position.y,p_player->GetComponent<Transform3D>()->position.z }, (char*)m_Name.c_str()});
 	switch (RecvMsg) // 메세지 해석
 	{
 	case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기

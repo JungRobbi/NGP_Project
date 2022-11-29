@@ -14,7 +14,7 @@
 
 
 std::list<GameData*> MsgCommandQueue{};
-std::list<SOCKET*> ClientSockList{};
+std::list<SOCKET> ClientSockList;
 CRITICAL_SECTION cs;
 
 DWORD WINAPI ClientThread(LPVOID arg)
@@ -22,7 +22,7 @@ DWORD WINAPI ClientThread(LPVOID arg)
 	std::string m_Name;
 	int retval;
 	SOCKET client_sock = (SOCKET)arg;
-	ClientSockList.push_back(&client_sock);
+	ClientSockList.push_back(SOCKET{ client_sock });
 	struct sockaddr_in clientaddr;
 	char addr[INET_ADDRSTRLEN];
 	int addrlen;
@@ -33,8 +33,19 @@ DWORD WINAPI ClientThread(LPVOID arg)
 	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
 
 	while (1) {
-		// 메세지 받기
-		GAMEMSG recv_msg = recvMSG(client_sock);
+
+		char buf[52];
+		retval = recv(client_sock, buf, 52, 0);
+		int msg;
+		memcpy(&msg, buf, 4);
+	
+
+		GAMEMSG recv_msg = MSG_CHAT;
+
+		EnterCriticalSection(&cs);
+
+		if (msg == MSG_LEAVE) break;
+		
 
 		if (recv_msg == MSG_LEAVE) {
 			std::cout << "MSG_LEAVE1 == " << std::endl;
@@ -46,18 +57,16 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		}
 		// 메세지 해석 -> 데이터 받기 -> 메세지 큐에 입력
 
-		GameData* gamedata{};
+		//GameData* gamedata{};
 
-		EnterCriticalSection(&cs);
-		switch (recv_msg) // 메세지 해석
+		GameData* data;
+		switch (msg) // 메세지 해석
 		{
 		case MSG_PLAYER_INFO_LOBBY:  // 데이터 받고 큐에 입력
-			gamedata = new PlayerInfoLobby{ recvPlayerInfoLobby(client_sock) };
-			if (gamedata->GetMsg() == MSG_LEAVE) break;
-			MsgCommandQueue.push_back(gamedata);
-			if (m_Name.empty())
-				m_Name = ((PlayerInfoLobby*)MsgCommandQueue.back())->GetID();
-
+			data = new PlayerInfoLobby;
+			::ZeroMemory(data, sizeof(data));
+			memcpy(((PlayerInfoLobby*)data), buf, sizeof(buf));
+			MsgCommandQueue.push_back((PlayerInfoLobby*)data);
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			break;
@@ -75,12 +84,12 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		case MSG_PAUSE:
 			break;
 		default:
-			gamedata = new GameData();
+			//gamedata = new GameData();
 			break;
 		}
 		LeaveCriticalSection(&cs);
 
-		if (gamedata->GetMsg() == MSG_LEAVE)
+		if (msg == MSG_LEAVE)
 			break;
 
 		//// 메세지 보내기
@@ -93,8 +102,10 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		//if (retval == -1)
 		//	break;
 	}
-
-	ClientSockList.remove_if([&client_sock](SOCKET* a) { return (*a) == client_sock; });
+	auto p = find(ClientSockList.begin(), ClientSockList.end(), client_sock);
+	closesocket(*p);
+	ClientSockList.remove(*p);
+	//ClientSockList.remove_if([&client_sock](SOCKET a) { return a == client_sock; });
 	closesocket(client_sock);
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
 
@@ -112,7 +123,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 
 		// 데이터 처리
 
-		std::cout << data->GetMsg() << std::endl;
+		//std::cout << data->GetMsg() << std::endl;
 
 		switch (data->GetMsg())
 		{
@@ -139,17 +150,21 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 		default:
 			break;
 		}
-
+		std::cout << " ClientSockList.size() - " << ClientSockList.size() << std::endl << std::endl;
 		switch (data->GetMsg())
 		{
 		case MSG_PLAYER_INFO_LOBBY:
 			for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
-				sendMSG(*(*p), MSG_PLAYER_INFO_LOBBY);
+				std::cout << " SOCKET - " << *p << std::endl << std::endl;
+
+				sendMSG(*p, MSG_PLAYER_INFO_LOBBY);
 
 				// 데이터 보내기
-				int retval = sendPlayerInfoLobby(*(*p), PlayerInfoLobby{ data->GetMsg(), ((PlayerInfoLobby*)data)->GetID(), ((PlayerInfoLobby*)data)->GetReady() });
-				if (retval == -1)
+				int retval = sendPlayerInfoLobby(*p, PlayerInfoLobby{ data->GetMsg(), ((PlayerInfoLobby*)data)->GetID(), ((PlayerInfoLobby*)data)->GetReady() });
+				if (retval == -1) {
+					err_display("SendPlayerInfoLobby");
 					break;
+				}
 			}
 			break;
 		case MSG_PLAYER_INFO_SCENE:
