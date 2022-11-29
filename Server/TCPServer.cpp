@@ -144,7 +144,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 
 			break;
 		case MSG_PLAYER_INFO_SCENE:
-			std::cout << "MSG_PLAYER_INFO_SCENE" << std::endl;
+			//std::cout << "MSG_PLAYER_INFO_SCENE" << std::endl;
 			break;
 		case MSG_CHAT:
 			break;
@@ -181,7 +181,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
-				std::cout << " SOCKET - " << *p << std::endl << std::endl;
+				//std::cout << " SOCKET - " << *p << std::endl << std::endl;
 
 				sendMSG(*p, MSG_PLAYER_INFO_SCENE);
 
