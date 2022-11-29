@@ -872,7 +872,7 @@ void Motion2(int x, int y)
 	}
 	if (Scene::scene->p_player->GetComponent<Camera>()->state == FIRST_VIEW) {
 		if (x > WINDOWX  - 100 || x < 100 || y > WINDOWY - 100 || y < 100) {
-			SetCursorPos(WINDOWX / 2, WINDOWY / 2);
+			// SetCursorPos(WINDOWX / 2, WINDOWY / 2);
 		}
 
 		float xoffset = x - intmpx;
