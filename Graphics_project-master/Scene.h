@@ -1,5 +1,7 @@
 #pragma once
 
+#define MAX_PLAYER 2
+
 #include <list>
 #include <queue>
 #include <deque>
@@ -18,6 +20,9 @@ public:
 	static Scene* scene;
 
 	GameObject* p_player;
+	GameObject* other_player;
+
+
 	int n_scene;
 	int* p_index_list;
 	GLuint* p_tex;

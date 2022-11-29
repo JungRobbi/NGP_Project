@@ -40,6 +40,7 @@
 
 #include "MSGFunc.h"
 #include "PlayerInfoLobbyFunc.h"
+#include "PlayerInforSceneFunc.h"
 
 char* SERVERIP;
 std::string m_Name;
@@ -177,7 +178,7 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 	strcpy(SERVERIP, server_s.c_str());
 
 	// 소켓 생성
-	SOCKET sock = socket(AF_INET, SOCK_STREAM, 0);
+	sock = socket(AF_INET, SOCK_STREAM, 0);
 	if (sock == INVALID_SOCKET) err_quit("socket()");
 
 	// connect()
@@ -238,10 +239,9 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 		default:
 			break;
 		}
-		sendMSG(sock, TempMSG);
 
 		// 데이터 보내기
-		Vector3 pc {0, 0, 0};
+		Vector3 pc {1, 0, 0};
 		retval = sendPlayerInfoLobby(sock, PlayerInfoLobby{ TempMSG, (char*)m_Name.c_str(), pc });
 		if (retval == -1)
 			break;
@@ -1074,7 +1074,7 @@ void NestSceneChange()
 
 DWORD WINAPI RecvThread(LPVOID temp)
 {
-	SOCKET sock = (SOCKET)temp;
+	//SOCKET sock = (SOCKET)temp;
 	GAMEMSG recv_msg;
 	while (true) {
 		// 메세지 받기
@@ -1089,6 +1089,7 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			RecvData = new PlayerInfoLobby{ recvPlayerInfoLobby(sock) };
 			break;
 		case MSG_PLAYER_INFO_SCENE:
+			RecvData = new PlayerInfoScene{ recvPlayerInfoScene(sock) };
 			break;
 		case MSG_CHAT:
 			break;
@@ -1108,7 +1109,6 @@ DWORD WINAPI RecvThread(LPVOID temp)
 
 		Scene::scene->RecvData = RecvData;
 		Scene::scene->RecvMsg = recv_msg;
-
 
 		// data를 여기서 처리해야 함
 

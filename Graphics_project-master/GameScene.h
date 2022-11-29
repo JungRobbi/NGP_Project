@@ -22,6 +22,8 @@ public:
 
 	int obj_number = 0;
 
+
+
 public:
 	GameScene();
 	GameScene(int);
