@@ -5,7 +5,7 @@
 void sendAddBlock(SOCKET sock, AddBlock data)
 {
 	int retval;
-	retval = send(sock, (char*)&data, sizeof(data), 0);
+	retval = send(sock, (char*)&data, sizeof(AddBlock), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 
@@ -17,6 +17,6 @@ AddBlock recvAddBlock(SOCKET sock)
 {
 	int retval;
 	AddBlock data;
-	retval = recv(sock, (char*)&data, sizeof(data), 0);
+	retval = recv(sock, (char*)&data, sizeof(AddBlock), 0);
 	return data;
 }
