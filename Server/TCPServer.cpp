@@ -37,6 +37,9 @@ DWORD WINAPI ClientThread(LPVOID arg)
 
 		char buf[52];
 		retval = recv(client_sock, buf, 52, 0);
+		if (retval == SOCKET_ERROR)
+			break;
+
 		int msg;
 		memcpy(&msg, buf, 4);
 	
