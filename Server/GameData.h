@@ -57,7 +57,7 @@ public:
 	~PlayerInfoScene() {}
 
 	char* GetID() { return ID; }
-
+	Vector3 GetPos() { return position; }
 private:
 	Vector3 position;
 	char ID[10];

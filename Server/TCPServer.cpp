@@ -9,6 +9,7 @@
 
 #include "MSGFunc.h"
 #include "PlayerInfoLobbyFunc.h"
+#include "PlayerInforSceneFunc.h"
 
 #define SERVERPORT 9000
 
@@ -168,6 +169,18 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 			}
 			break;
 		case MSG_PLAYER_INFO_SCENE:
+			for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
+				std::cout << " SOCKET - " << *p << std::endl << std::endl;
+
+				sendMSG(*p, MSG_PLAYER_INFO_SCENE);
+
+				// 데이터 보내기
+				int retval = sendPlayerInfoScene(*p, PlayerInfoScene{ data->GetMsg(), ((PlayerInfoScene*)data)->GetPos(), ((PlayerInfoScene*)data)->GetID()});
+				if (retval == -1) {
+					err_display("SendPlayerInfoScene");
+					break;
+				}
+			}
 			break;
 		case MSG_CHAT:
 			break;
