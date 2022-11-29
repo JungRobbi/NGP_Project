@@ -1084,7 +1084,7 @@ DWORD WINAPI RecvThread(LPVOID temp)
 	while (true) {
 		// 메세지 받기
 		recv_msg = recvMSG(sock);
-		/*printf("받은 메세지 : %d\n", recv_msg);*/
+		//printf("받은 메세지 : %d\n", recv_msg);
 
 		GameData* RecvData;
 
@@ -1092,9 +1092,13 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		{
 		case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
 			RecvData = new PlayerInfoLobby{ recvPlayerInfoLobby(sock) };
+			std::cout << "ID - " << ((PlayerInfoLobby*)RecvData)->GetID() << std::endl;
+			std::cout << "Ready. R - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << std::endl;
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			RecvData = new PlayerInfoScene{ recvPlayerInfoScene(sock) };
+			//std::cout << "ID - " << ((PlayerInfoScene*)RecvData)->GetID() << std::endl;
+			//std::cout << "Position - " << ((PlayerInfoScene*)RecvData)->GetPos().x << std::endl;
 			break;
 		case MSG_CHAT:
 			break;
@@ -1118,8 +1122,7 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		// data를 여기서 처리해야 함
 
 		// 받은 데이터 출력
-		//std::cout << "ID - " << ((PlayerInfoLobby*)RecvData)->GetID() << std::endl;
-		//std::cout << "Ready. R - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << std::endl;
+		
 	}
 
 	return 0;

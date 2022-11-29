@@ -139,6 +139,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 
 			break;
 		case MSG_PLAYER_INFO_SCENE:
+			std::cout << "MSG_PLAYER_INFO_SCENE" << std::endl;
 			break;
 		case MSG_CHAT:
 			break;

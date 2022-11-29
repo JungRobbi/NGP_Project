@@ -20,5 +20,6 @@ PlayerInfoLobby recvPlayerInfoLobby(SOCKET sock)
 	int retval;
 	PlayerInfoLobby data;
 	retval = recv(sock, (char*)&data, sizeof(PlayerInfoLobby), 0);
+	std::cout << retval << "Byte Get" << std::endl;
 	return data;
 }
