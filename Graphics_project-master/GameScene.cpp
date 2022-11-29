@@ -5,6 +5,8 @@
 #include "LavaMove.h"
 #include "OtherPlayer.h"
 
+extern std::string m_Name;
+
 GameScene::GameScene() : Scene()
 {
 
@@ -914,15 +916,16 @@ void GameScene::update()
 {
 	Scene::update();
 	//sendPlayerInfoScene(sock, PlayerInfoScene{ MSG_PLAYER_INFO_SCENE, Vector3{p_player->GetComponent<Transform3D>()->position.x,p_player->GetComponent<Transform3D>()->position.y,p_player->GetComponent<Transform3D>()->position.z }, (char*)"asdf" });
-	switch (RecvMSG) // 메세지 해석
+	switch (RecvMsg) // 메세지 해석
 	{
 	case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
-		std::cout <<"받다";
-		
-		strcpy(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoLobby*)RecvData)->GetID());
-		std::cout << other_player->GetComponent<OtherPlayer>()->ID << std::endl;
-
-		other_player->GetComponent<OtherPlayer>()->color = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
+		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())) {
+			std::cout << "받다";
+			memcpy(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoLobby*)RecvData)->GetID(),sizeof(((PlayerInfoLobby*)RecvData)->GetID()));
+			std::cout << other_player->GetComponent<OtherPlayer>()->ID << std::endl;
+			other_player->GetComponent<OtherPlayer>()->color = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
+		}
+		RecvMsg = (GAMEMSG)-1;
 		break;                                                                                                                                                                                                              
 
 	case MSG_PLAYER_INFO_SCENE:

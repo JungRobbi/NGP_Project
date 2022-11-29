@@ -21,8 +21,6 @@ public:
 	unsigned int projLocation;
 
 	int obj_number = 0;
-
-	GameData* RecvData;
 	GAMEMSG RecvMSG;
 
 public:
