@@ -42,6 +42,8 @@ public:
 
 	char* GetID() { return ID; }
 	Vector3 GetReady() { return ready_state; }
+	void SetID(char* in) { strcpy(ID,in); }
+	void SetReady(Vector3 in) { ready_state = in; }
 
 private:
 	char ID[10];
