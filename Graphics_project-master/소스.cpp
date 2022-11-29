@@ -41,6 +41,7 @@
 #include "MSGFunc.h"
 #include "PlayerInfoLobbyFunc.h"
 #include "PlayerInforSceneFunc.h"
+#include "AddBlock.h"
 
 char* SERVERIP;
 std::string m_Name;
@@ -848,6 +849,7 @@ void Mouse(int button, int state, int x, int y)
 				box->GetComponent<Transform3D>()->position = glm::vec3(msx * 15.0f, create_height, -msy * 15.0f);
 				box->texture = texture[4];
 				Scene::scene->p_player->Item_bag.erase(p);
+				sendAddBlock(sock, AddBlock{MSG_ADD_BLOCK, Vector3{msx,8.0,msy} });
 			}
 			std::cout << " -- " << msx * 15.0f << ", " << -msy * 15.0f << std::endl;
 		}
