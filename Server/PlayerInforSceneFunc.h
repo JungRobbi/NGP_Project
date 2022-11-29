@@ -3,15 +3,15 @@
 #include "GameData.h"
 
 
-void sendPlayerInfoScene(SOCKET sock, PlayerInfoScene data)
+int sendPlayerInfoScene(SOCKET sock, PlayerInfoScene data)
 {
 	int retval;
 	retval = send(sock, (char*)&data, sizeof(data), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
-		return;
+		return -1;
 	}
-
+	return retval;
 
 }
 
