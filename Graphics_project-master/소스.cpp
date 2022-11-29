@@ -844,12 +844,8 @@ void Mouse(int button, int state, int x, int y)
 		if (n_model == Cube) {
 			auto p = find(Scene::scene->p_player->Item_bag.begin(), Scene::scene->p_player->Item_bag.end(), Cube);
 			if (p != Scene::scene->p_player->Item_bag.end()) {
-				auto box = Scene::scene->CreateAirHardBox(num_shape_list, texture, VAO);
-				box->AddComponent<Gravity>();
-				box->GetComponent<Transform3D>()->position = glm::vec3(msx * 15.0f, create_height, -msy * 15.0f);
-				box->texture = texture[4];
+				sendAddBlock(sock, AddBlock{MSG_ADD_BLOCK, Vector3{msx*15.0f,8.0,-msy*15.0f} });
 				Scene::scene->p_player->Item_bag.erase(p);
-				sendAddBlock(sock, AddBlock{MSG_ADD_BLOCK, Vector3{msx,8.0,msy} });
 			}
 			std::cout << " -- " << msx * 15.0f << ", " << -msy * 15.0f << std::endl;
 		}
