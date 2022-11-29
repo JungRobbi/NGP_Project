@@ -70,6 +70,10 @@ DWORD WINAPI ClientThread(LPVOID arg)
 			MsgCommandQueue.push_back((PlayerInfoLobby*)data);
 			break;
 		case MSG_PLAYER_INFO_SCENE:
+			data = new PlayerInfoScene;
+			::ZeroMemory(data, sizeof(data));
+			memcpy(((PlayerInfoScene*)data), buf, sizeof(buf));
+			MsgCommandQueue.push_back((PlayerInfoScene*)data);
 			break;
 		case MSG_CHAT:
 			break;
@@ -135,6 +139,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 
 			break;
 		case MSG_PLAYER_INFO_SCENE:
+			std::cout << "MSG_PLAYER_INFO_SCENE" << std::endl;
 			break;
 		case MSG_CHAT:
 			break;
