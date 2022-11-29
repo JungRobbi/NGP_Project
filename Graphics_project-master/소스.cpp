@@ -218,6 +218,9 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 		{
 		case MSG_PLAYER_INFO_LOBBY:
 			TempMSG = MSG_PLAYER_INFO_LOBBY;
+			retval = sendPlayerInfoLobby(sock, PlayerInfoLobby{ TempMSG, (char*)m_Name.c_str(), color });
+			if (retval == -1)
+				break;
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			TempMSG = MSG_PLAYER_INFO_SCENE;
@@ -246,9 +249,7 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 
 		// 데이터 보내기
 		
-		retval = sendPlayerInfoLobby(sock, PlayerInfoLobby{ TempMSG, (char*)m_Name.c_str(), color });
-		if (retval == -1)
-			break;
+		
 
 	}
 
