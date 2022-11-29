@@ -2,15 +2,14 @@
 #include "Common.h"
 #include "GameData.h"
 
-void sendAddBlock(SOCKET sock, AddBlock data)
+int sendAddBlock(SOCKET sock, AddBlock data)
 {
 	int retval;
 	retval = send(sock, (char*)&data, sizeof(data), 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
-
-		return;
 	}
+	return retval;
 }
 
 AddBlock recvAddBlock(SOCKET sock)

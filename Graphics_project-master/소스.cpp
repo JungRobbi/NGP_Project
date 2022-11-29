@@ -1105,6 +1105,7 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		case MSG_CHAT:
 			break;
 		case MSG_ADD_BLOCK:
+			RecvData = new AddBlock{ recvAddBlock(sock) };
 			break;
 		case MSG_COLLIDE:
 			break;

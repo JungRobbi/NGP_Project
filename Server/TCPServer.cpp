@@ -10,6 +10,7 @@
 #include "MSGFunc.h"
 #include "PlayerInfoLobbyFunc.h"
 #include "PlayerInforSceneFunc.h"
+#include "AddBlock.h"
 
 #define SERVERPORT 9000
 
@@ -78,6 +79,10 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		case MSG_CHAT:
 			break;
 		case MSG_ADD_BLOCK:
+			data = new AddBlock;
+			::ZeroMemory(data, sizeof(data));
+			memcpy(((AddBlock*)data), buf, sizeof(buf));
+			MsgCommandQueue.push_back((AddBlock*)data);
 			break;
 		case MSG_COLLIDE:
 			break;
@@ -144,6 +149,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 		case MSG_CHAT:
 			break;
 		case MSG_ADD_BLOCK:
+			std::cout << "MSG_ADDBLOCK" << std::endl;
 			break;
 		case MSG_COLLIDE:
 			break;
@@ -190,6 +196,18 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 		case MSG_CHAT:
 			break;
 		case MSG_ADD_BLOCK:
+			for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
+				std::cout << " SOCKET - " << *p << std::endl << std::endl;
+
+				sendMSG(*p, MSG_ADD_BLOCK);
+
+				// 데이터 보내기
+				int retval = sendAddBlock(*p, AddBlock{ data->GetMsg(), ((AddBlock*)data)->GetPosition() });
+				if (retval == -1) {
+					err_display("SendAddBlock");
+					break;
+				}
+			}
 			break;
 		case MSG_COLLIDE:
 			break;
