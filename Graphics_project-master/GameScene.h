@@ -21,8 +21,7 @@ public:
 	unsigned int projLocation;
 
 	int obj_number = 0;
-
-
+	GAMEMSG RecvMSG;
 
 public:
 	GameScene();
