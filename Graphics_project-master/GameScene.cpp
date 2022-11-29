@@ -8,7 +8,9 @@
 extern SOCKET sock;
 extern std::string m_Name;
 
-extern std::string m_Name;
+extern GLuint VAO[100];
+extern GLuint texture[40];
+extern int num_shape_list[10];
 
 GameScene::GameScene() : Scene()
 {
@@ -919,6 +921,9 @@ GameObject* GameScene::CreateBall(int* index_list, GLuint* tex, GLuint* vao)
 void GameScene::update()
 {
 	Scene::update();
+
+	bool add_block = false;
+
 	if(n_scene>=1)
 		sendPlayerInfoScene(sock, PlayerInfoScene{ MSG_PLAYER_INFO_SCENE, Vector3{p_player->GetComponent<Transform3D>()->position.x,p_player->GetComponent<Transform3D>()->position.y,p_player->GetComponent<Transform3D>()->position.z }, (char*)m_Name.c_str()});
 	switch (RecvMsg) // 메세지 해석
@@ -941,6 +946,7 @@ void GameScene::update()
 	case MSG_CHAT:
 		break;
 	case MSG_ADD_BLOCK:
+		add_block = true;
 		break;
 	case MSG_COLLIDE:
 		break;
@@ -952,6 +958,14 @@ void GameScene::update()
 		break;
 	default:
 		break;
+	}
+
+	if (add_block) {
+		auto box = CreateAirHardBox(num_shape_list, texture, VAO);
+		box->AddComponent<Gravity>();
+		box->GetComponent<Transform3D>()->position = glm::vec3(((AddBlock*)RecvData)->GetPosition().x, ((AddBlock*)RecvData)->GetPosition().y, ((AddBlock*)RecvData)->GetPosition().z);
+		box->texture = texture[4];
+		add_block = false;
 	}
 
 	auto player_tran = p_player->GetComponent<Transform3D>();
