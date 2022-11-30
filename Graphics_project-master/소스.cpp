@@ -43,6 +43,8 @@
 #include "PlayerInforSceneFunc.h"
 #include "AddBlock.h"
 
+CRITICAL_SECTION cs;
+
 char* SERVERIP;
 std::string m_Name;
 
@@ -160,7 +162,6 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
 
-
 	std::cout << std::endl << " ======== Login ======== " << std::endl << std::endl;
 	while (true) {
 		std::cout << std::endl << "사용 할 닉네임을 입력해주세요. (10자 이내) : ";
@@ -269,7 +270,7 @@ int main(int argc, char** argv)
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
 
-
+	InitializeCriticalSection(&cs);
 	// create window using freeglut
 	glutInit(&argc, argv);
 	glutInitDisplayMode(GLUT_DOUBLE | GLUT_RGBA | GLUT_DEPTH);
@@ -352,7 +353,7 @@ int main(int argc, char** argv)
 
 	// freeglut 윈도우 이벤트 처리 시작. 윈도우가 닫힐때까지 후한루프 실행.
 	glutMainLoop();
-
+	DeleteCriticalSection(&cs);
 	return 0;
 }
 
@@ -875,7 +876,7 @@ void Motion2(int x, int y)
 	}
 	if (Scene::scene->p_player->GetComponent<Camera>()->state == FIRST_VIEW) {
 		if (x > WINDOWX  - 100 || x < 100 || y > WINDOWY - 100 || y < 100) {
-			// SetCursorPos(WINDOWX / 2, WINDOWY / 2);
+			 SetCursorPos(WINDOWX / 2, WINDOWY / 2);
 		}
 
 		float xoffset = x - intmpx;
@@ -1091,12 +1092,11 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
 			RecvData = new PlayerInfoLobby{ recvPlayerInfoLobby(sock) };
 			std::cout << "ID - " << ((PlayerInfoLobby*)RecvData)->GetID() << std::endl;
-			std::cout << "Ready. R - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << std::endl;
+			std::cout << "Ready. R - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << "\nReady. G - " << ((PlayerInfoLobby*)RecvData)->GetReady().y << "\nReady. B - " << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl<<std::endl;
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			RecvData = new PlayerInfoScene{ recvPlayerInfoScene(sock) };
-			//std::cout << "ID - " << ((PlayerInfoScene*)RecvData)->GetID() << std::endl;
-			//std::cout << "Position - " << ((PlayerInfoScene*)RecvData)->GetPos().x << std::endl;
+
 			break;
 		case MSG_CHAT:
 			break;
@@ -1114,9 +1114,11 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		default:
 			break;
 		}
-
+		
+		EnterCriticalSection(&cs);
 		Scene::scene->RecvData = RecvData;
 		Scene::scene->RecvMsg = recv_msg;
+		LeaveCriticalSection(&cs);
 
 		// data를 여기서 처리해야 함
 
