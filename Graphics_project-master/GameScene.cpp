@@ -11,6 +11,7 @@ extern std::string m_Name;
 extern GLuint VAO[100];
 extern GLuint texture[40];
 extern int num_shape_list[10];
+extern CRITICAL_SECTION cs;
 
 GameScene::GameScene() : Scene()
 {
@@ -749,9 +750,6 @@ GameObject* GameScene::CreateStar(int* index_list, GLuint* tex, GLuint* vao) // 
 	star->AddComponent<Transform3D>()->pitch = 90.0f;
 	star->AddComponent<ItemRotate>();
 
-	//std::cout << std::endl << std::endl << BoundBox[Star].maxX << " " << BoundBox[Star].maxY << std::endl;
-	//std::cout << BoundBox[Star].minX << " " << BoundBox[Star].minY << std::endl;
-
 	// render 부분
 	star->modelLocation = modelLocation;
 	star->num_index = index_list[1]; // load() 첫 번째
@@ -926,13 +924,14 @@ void GameScene::update()
 
 	if(n_scene>=1)
 		sendPlayerInfoScene(sock, PlayerInfoScene{ MSG_PLAYER_INFO_SCENE, Vector3{p_player->GetComponent<Transform3D>()->position.x,p_player->GetComponent<Transform3D>()->position.y,p_player->GetComponent<Transform3D>()->position.z }, (char*)m_Name.c_str()});
+	EnterCriticalSection(&cs);
 	switch (RecvMsg) // 메세지 해석
 	{
 	case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
-		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())) {
-			
+		std::cout << "받은데이터 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 내 ID - " << (char*)m_Name.c_str() << std::endl;
+
+		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())!= 0) {
 			memcpy(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoLobby*)RecvData)->GetID(),sizeof(((PlayerInfoLobby*)RecvData)->GetID()));
-			std::cout << other_player->GetComponent<OtherPlayer>()->ID << std::endl;
 			other_player->GetComponent<OtherPlayer>()->color = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
 		}
 		RecvMsg = (GAMEMSG)-1;
@@ -967,6 +966,7 @@ void GameScene::update()
 		box->texture = texture[4];
 		add_block = false;
 	}
+	LeaveCriticalSection(&cs);
 
 	auto player_tran = p_player->GetComponent<Transform3D>();
 	auto player_camera = p_player->GetComponent<Camera>();

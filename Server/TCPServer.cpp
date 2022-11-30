@@ -162,7 +162,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 		default:
 			break;
 		}
-		std::cout << " ClientSockList.size() - " << ClientSockList.size() << std::endl << std::endl;
+		//std::cout << " ClientSockList.size() - " << ClientSockList.size() << std::endl << std::endl;
 		switch (data->GetMsg())
 		{
 		case MSG_PLAYER_INFO_LOBBY:
