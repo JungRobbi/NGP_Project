@@ -12,6 +12,7 @@ extern GLuint VAO[100];
 extern GLuint texture[40];
 extern int num_shape_list[10];
 extern CRITICAL_SECTION cs;
+bool come = true;
 
 GameScene::GameScene() : Scene()
 {
@@ -930,9 +931,10 @@ void GameScene::update()
 	case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
 		std::cout << "받은데이터 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 내 ID - " << (char*)m_Name.c_str() << std::endl;
 
-		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())!= 0) {
+		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())!= 0 && come == true) {
 			memcpy(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoLobby*)RecvData)->GetID(),sizeof(((PlayerInfoLobby*)RecvData)->GetID()));
 			other_player->GetComponent<OtherPlayer>()->color = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
+			come = false;
 		}
 		RecvMsg = (GAMEMSG)-1;
 		break;                                                                                                                                                                                                              
