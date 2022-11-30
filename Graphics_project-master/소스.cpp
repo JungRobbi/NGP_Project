@@ -162,7 +162,6 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return 1;
 
-
 	std::cout << std::endl << " ======== Login ======== " << std::endl << std::endl;
 	while (true) {
 		std::cout << std::endl << "사용 할 닉네임을 입력해주세요. (10자 이내) : ";
