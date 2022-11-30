@@ -20,5 +20,7 @@ PlayerInfoScene recvPlayerInfoScene(SOCKET sock)
 	int retval;
 	PlayerInfoScene data;
 	retval = recv(sock, (char*)&data, sizeof(PlayerInfoScene), 0);
+	if (retval == 0)
+		data.SetMsg(MSG_LEAVE);
 	return data;
 }

@@ -10,6 +10,7 @@
 #include "MSGFunc.h"
 #include "PlayerInfoLobbyFunc.h"
 #include "PlayerInforSceneFunc.h"
+#include "AddBlock.h"
 
 #define SERVERPORT 9000
 
@@ -17,6 +18,7 @@
 std::list<GameData*> MsgCommandQueue{};
 std::list<SOCKET> ClientSockList;
 CRITICAL_SECTION cs;
+CRITICAL_SECTION socklist_cs;
 
 DWORD WINAPI ClientThread(LPVOID arg)
 {
@@ -39,7 +41,6 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		retval = recv(client_sock, buf, 52, 0);
 		if (retval == SOCKET_ERROR)
 			break;
-
 		int msg;
 		memcpy(&msg, buf, 4);
 	
@@ -70,7 +71,7 @@ DWORD WINAPI ClientThread(LPVOID arg)
 			data = new PlayerInfoLobby;
 			::ZeroMemory(data, sizeof(data));
 			memcpy(((PlayerInfoLobby*)data), buf, sizeof(buf));
-			MsgCommandQueue.push_back((PlayerInfoLobby*)data);
+			MsgCommandQueue.push_front((PlayerInfoLobby*)data);
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			data = new PlayerInfoScene;
@@ -81,6 +82,10 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		case MSG_CHAT:
 			break;
 		case MSG_ADD_BLOCK:
+			data = new AddBlock;
+			::ZeroMemory(data, sizeof(data));
+			memcpy(((AddBlock*)data), buf, sizeof(buf));
+			MsgCommandQueue.push_back((AddBlock*)data);
 			break;
 		case MSG_COLLIDE:
 			break;
@@ -110,9 +115,11 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		//if (retval == -1)
 		//	break;
 	}
+	EnterCriticalSection(&socklist_cs);
 	auto p = find(ClientSockList.begin(), ClientSockList.end(), client_sock);
 	closesocket(*p);
 	ClientSockList.remove(*p);
+	LeaveCriticalSection(&socklist_cs);
 	//ClientSockList.remove_if([&client_sock](SOCKET a) { return a == client_sock; });
 	closesocket(client_sock);
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
@@ -142,11 +149,12 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 
 			break;
 		case MSG_PLAYER_INFO_SCENE:
-			std::cout << "MSG_PLAYER_INFO_SCENE" << std::endl;
+			//std::cout << "MSG_PLAYER_INFO_SCENE" << std::endl;
 			break;
 		case MSG_CHAT:
 			break;
 		case MSG_ADD_BLOCK:
+			std::cout << "MSG_ADDBLOCK" << std::endl;
 			break;
 		case MSG_COLLIDE:
 			break;
@@ -159,7 +167,8 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 		default:
 			break;
 		}
-		std::cout << " ClientSockList.size() - " << ClientSockList.size() << std::endl << std::endl;
+		//std::cout << " ClientSockList.size() - " << ClientSockList.size() << std::endl << std::endl;
+		EnterCriticalSection(&socklist_cs);
 		switch (data->GetMsg())
 		{
 		case MSG_PLAYER_INFO_LOBBY:
@@ -178,7 +187,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
-				std::cout << " SOCKET - " << *p << std::endl << std::endl;
+				//std::cout << " SOCKET - " << *p << std::endl << std::endl;
 
 				sendMSG(*p, MSG_PLAYER_INFO_SCENE);
 
@@ -193,6 +202,18 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 		case MSG_CHAT:
 			break;
 		case MSG_ADD_BLOCK:
+			for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
+				std::cout << " SOCKET - " << *p << std::endl << std::endl;
+
+				sendMSG(*p, MSG_ADD_BLOCK);
+
+				// 데이터 보내기
+				int retval = sendAddBlock(*p, AddBlock{ data->GetMsg(), ((AddBlock*)data)->GetPosition() });
+				if (retval == -1) {
+					err_display("SendAddBlock");
+					break;
+				}
+			}
 			break;
 		case MSG_COLLIDE:
 			break;
@@ -205,6 +226,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 		default:
 			break;
 		}
+		LeaveCriticalSection(&socklist_cs);
 
 		MsgCommandQueue.pop_front();
 		LeaveCriticalSection(&cs);
@@ -243,6 +265,7 @@ int main(int argc, char* argv[])
 	int addrlen;
 
 	InitializeCriticalSection(&cs);
+	InitializeCriticalSection(&socklist_cs);
 
 	HANDLE hThread;
 	HANDLE hCacul_ExecuteThread;
@@ -276,7 +299,7 @@ int main(int argc, char* argv[])
 
 	closesocket(listen_sock);
 	DeleteCriticalSection(&cs);
-
+	DeleteCriticalSection(&socklist_cs);
 	WSACleanup();
 	return 0;
 }

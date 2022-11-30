@@ -8,7 +8,11 @@
 extern SOCKET sock;
 extern std::string m_Name;
 
-extern std::string m_Name;
+extern GLuint VAO[100];
+extern GLuint texture[40];
+extern int num_shape_list[10];
+extern CRITICAL_SECTION cs;
+bool come = true;
 
 GameScene::GameScene() : Scene()
 {
@@ -747,9 +751,6 @@ GameObject* GameScene::CreateStar(int* index_list, GLuint* tex, GLuint* vao) // 
 	star->AddComponent<Transform3D>()->pitch = 90.0f;
 	star->AddComponent<ItemRotate>();
 
-	//std::cout << std::endl << std::endl << BoundBox[Star].maxX << " " << BoundBox[Star].maxY << std::endl;
-	//std::cout << BoundBox[Star].minX << " " << BoundBox[Star].minY << std::endl;
-
 	// render 부분
 	star->modelLocation = modelLocation;
 	star->num_index = index_list[1]; // load() 첫 번째
@@ -919,29 +920,33 @@ GameObject* GameScene::CreateBall(int* index_list, GLuint* tex, GLuint* vao)
 void GameScene::update()
 {
 	Scene::update();
-	//sendPlayerInfoScene(sock, PlayerInfoScene{ MSG_PLAYER_INFO_SCENE, Vector3{p_player->GetComponent<Transform3D>()->position.x,p_player->GetComponent<Transform3D>()->position.y,p_player->GetComponent<Transform3D>()->position.z }, (char*)"asdf" });
-	switch (RecvMsg) // 메세지 해석
+
+	bool add_block = false;
+
 	if(n_scene>=1)
 		sendPlayerInfoScene(sock, PlayerInfoScene{ MSG_PLAYER_INFO_SCENE, Vector3{p_player->GetComponent<Transform3D>()->position.x,p_player->GetComponent<Transform3D>()->position.y,p_player->GetComponent<Transform3D>()->position.z }, (char*)m_Name.c_str()});
+	EnterCriticalSection(&cs);
 	switch (RecvMsg) // 메세지 해석
 	{
 	case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
-		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())) {
-			std::cout << "받다";
-			memcpy(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoLobby*)RecvData)->GetID(),sizeof(((PlayerInfoLobby*)RecvData)->GetID()));
-			std::cout << other_player->GetComponent<OtherPlayer>()->ID << std::endl;
+		std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 내 이름 - " << m_Name << std::endl;
+		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())!= 0) {
+			std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
+			strcpy(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoLobby*)RecvData)->GetID());
 			other_player->GetComponent<OtherPlayer>()->color = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
 		}
-		RecvMsg = (GAMEMSG)-1;
+		
 		break;                                                                                                                                                                                                              
 
 	case MSG_PLAYER_INFO_SCENE:
-		if(other_player->GetComponent<OtherPlayer>()->ID==((PlayerInfoScene*)RecvData)->GetID())
+
+		if (!strcmp(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoScene*)RecvData)->GetID()))
 			other_player->GetComponent<OtherPlayer>()->pos = glm::vec3(((PlayerInfoScene*)RecvData)->GetPos().x, ((PlayerInfoScene*)RecvData)->GetPos().y, ((PlayerInfoScene*)RecvData)->GetPos().z);
 		break;
 	case MSG_CHAT:
 		break;
 	case MSG_ADD_BLOCK:
+		add_block = true;
 		break;
 	case MSG_COLLIDE:
 		break;
@@ -954,6 +959,16 @@ void GameScene::update()
 	default:
 		break;
 	}
+	RecvMsg = MSG_NORMAL;
+
+	if (add_block) {
+		auto box = CreateAirHardBox(num_shape_list, texture, VAO);
+		box->AddComponent<Gravity>();
+		box->GetComponent<Transform3D>()->position = glm::vec3(((AddBlock*)RecvData)->GetPosition().x, ((AddBlock*)RecvData)->GetPosition().y, ((AddBlock*)RecvData)->GetPosition().z);
+		box->texture = texture[4];
+		add_block = false;
+	}
+	LeaveCriticalSection(&cs);
 
 	auto player_tran = p_player->GetComponent<Transform3D>();
 	auto player_camera = p_player->GetComponent<Camera>();
