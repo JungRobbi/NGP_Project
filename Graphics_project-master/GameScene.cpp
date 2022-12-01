@@ -954,10 +954,27 @@ void GameScene::update()
 		{
 			if (obj->obj_num == ((S_Collide*)RecvData)->GetItem_index())
 			{
-				std::cout << obj->VAO << " - " << p_vao[Pickaxe] << std::endl;
 				if (obj->VAO == p_vao[Pickaxe])
 				{
 					p_player->Item_bag.push_back(Pickaxe);
+					PushDelete(obj);
+				}
+
+				if (obj->VAO == p_vao[Shoes])
+				{
+					p_player->Item_bag.push_back(Shoes);
+					PushDelete(obj);
+				}
+
+				if (obj->VAO == p_vao[Cube] && obj->GetComponent<DestroyEffect>())
+				{
+					obj->GetComponent<DestroyEffect>()->destroy = true;
+					p_player->Item_bag.push_back(Cube);
+				}
+
+				if (obj->VAO == p_vao[Star])
+				{
+					p_player->Item_bag.push_back(Star);
 					PushDelete(obj);
 				}
 

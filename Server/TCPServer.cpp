@@ -89,7 +89,6 @@ DWORD WINAPI ClientThread(LPVOID arg)
 			MsgCommandQueue.push_back((AddBlock*)data);
 			break;
 		case MSG_COLLIDE:
-			std::cout << "asdf";
 			data = new S_Collide;
 			::ZeroMemory(data, sizeof(data));
 			memcpy(((S_Collide*)data), buf, sizeof(buf));
