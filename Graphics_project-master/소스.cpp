@@ -1094,7 +1094,6 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			RecvData = new PlayerInfoLobby{ recvPlayerInfoLobby(sock) };
 			std::cout << "\n서버에서 받음\n" << std::endl;
 			std::cout << "ID - " << ((PlayerInfoLobby*)RecvData)->GetID() << std::endl;
-			std::cout << "Ready. R - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << "\nReady. G - " << ((PlayerInfoLobby*)RecvData)->GetReady().y << "\nReady. B - " << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl<<std::endl;
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			RecvData = new PlayerInfoScene{ recvPlayerInfoScene(sock) };
