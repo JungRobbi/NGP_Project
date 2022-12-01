@@ -949,6 +949,21 @@ void GameScene::update()
 		add_block = true;
 		break;
 	case MSG_COLLIDE:
+		std::cout << ((S_Collide*)RecvData)->GetItem_index() << std::endl;
+		for (auto obj : gameObjects)
+		{
+			if (obj->obj_num == ((S_Collide*)RecvData)->GetItem_index())
+			{
+				std::cout << obj->VAO << " - " << p_vao[Pickaxe] << std::endl;
+				if (obj->VAO == p_vao[Pickaxe])
+				{
+					p_player->Item_bag.push_back(Pickaxe);
+					PushDelete(obj);
+				}
+
+			}
+		}
+		
 		break;
 	case MSG_LEAVE:
 		break;

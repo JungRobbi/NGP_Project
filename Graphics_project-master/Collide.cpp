@@ -1,3 +1,4 @@
+#pragma once
 #include "Collide.h"
 #include "Gravity.h"
 #include "Scene.h"
@@ -6,8 +7,10 @@
 #include "PlayerJump.h"
 #include <cmath>
 #include "CannonShot.h"
+#include "CollideInfo.h"
 
 extern bool key[256];
+extern SOCKET sock;
 
 
 static BoundingBox BoundBox_Cube{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
@@ -40,15 +43,13 @@ void Collide::update()
 			if (CheckBoxtoBox(sub_BoundBox, obj->GetComponent<Collide>()->BoundBox)) {
 				
 				if (obj->VAO == Scene::scene->p_vao[Pickaxe]) {
-					gameObject->Item_bag.push_back(Pickaxe);
-					Scene::scene->PushDelete(obj);
-					std::cout << "pickaxe - " << obj->obj_num << std::endl;
+					sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Shoes]) {
 					gameObject->Item_bag.push_back(Shoes);
 					Scene::scene->PushDelete(obj);
-					std::cout << "Shoes - " << obj->obj_num << std::endl;
+					sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Ball]) {
@@ -63,14 +64,14 @@ void Collide::update()
 						obj->GetComponent<DestroyEffect>()->destroy = true;
 						gameObject->Item_bag.push_back(Cube);
 						gameObject->Item_bag.erase(p);
-						std::cout << "Cube - " << obj->obj_num << std::endl;
+						sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
 						continue;
 					}
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Star]) {
 					gameObject->Item_bag.push_back(Star);
 					Scene::scene->PushDelete(obj);
-					std::cout << "Star - " << obj->obj_num << std::endl;
+					sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Spike]) {
@@ -91,15 +92,13 @@ void Collide::update()
 			}
 			else if (CheckBoxtoBox(BoundBox, obj->GetComponent<Collide>()->BoundBox)) {
 				if (obj->VAO == Scene::scene->p_vao[Pickaxe]) {
-					gameObject->Item_bag.push_back(Pickaxe);
-					Scene::scene->PushDelete(obj);
-					std::cout << "pickaxe - " << obj->obj_num << std::endl;
+					sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Shoes]) {
 					gameObject->Item_bag.push_back(Shoes);
 					Scene::scene->PushDelete(obj);
-					std::cout << "shoes - " << obj->obj_num << std::endl;
+					sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Ball]) {
@@ -114,14 +113,14 @@ void Collide::update()
 						obj->GetComponent<DestroyEffect>()->destroy = true;
 						gameObject->Item_bag.push_back(Cube);
 						gameObject->Item_bag.erase(p);
-						std::cout << "cube - " << obj->obj_num << std::endl;
+						sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
 						continue;
 					}
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Star]) {
 					gameObject->Item_bag.push_back(Star);
 					Scene::scene->PushDelete(obj);
-					std::cout << "star - " << obj->obj_num << std::endl;
+					sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Spike]) {
