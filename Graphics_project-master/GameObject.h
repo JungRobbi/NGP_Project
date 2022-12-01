@@ -19,6 +19,7 @@ public:
 
 	int num_index;
 	int obj_num=-1;
+	int obj_kind = 0;
 
 	GLint VAO;
 	GLint texture;

@@ -11,6 +11,7 @@
 #include "PlayerInfoLobbyFunc.h"
 #include "PlayerInforSceneFunc.h"
 #include "AddBlock.h"
+#include "CollideInfo.h"
 
 #define SERVERPORT 9000
 
@@ -88,6 +89,10 @@ DWORD WINAPI ClientThread(LPVOID arg)
 			MsgCommandQueue.push_back((AddBlock*)data);
 			break;
 		case MSG_COLLIDE:
+			data = new S_Collide;
+			::ZeroMemory(data, sizeof(data));
+			memcpy(((S_Collide*)data), buf, sizeof(buf));
+			MsgCommandQueue.push_front((S_Collide*)data);
 			break;
 		case MSG_LEAVE:
 			std::cout << "MSG_LEAVE2 === " << std::endl;
@@ -216,6 +221,18 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 			}
 			break;
 		case MSG_COLLIDE:
+			for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
+				//std::cout << " SOCKET - " << *p << std::endl << std::endl;
+
+				sendMSG(*p, MSG_COLLIDE);
+
+				// 데이터 보내기
+				int retval = sendCollideInfo(*p, S_Collide{ data->GetMsg(), ((S_Collide*)data)->GetItem_index()});
+				if (retval == -1) {
+					err_display("SendCollide");
+					break;
+				}
+			}
 			break;
 		case MSG_LEAVE:
 			break;
