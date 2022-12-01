@@ -42,16 +42,19 @@ void Collide::update()
 				if (obj->VAO == Scene::scene->p_vao[Pickaxe]) {
 					gameObject->Item_bag.push_back(Pickaxe);
 					Scene::scene->PushDelete(obj);
+					std::cout << "pickaxe - " << obj->obj_num << std::endl;
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Shoes]) {
 					gameObject->Item_bag.push_back(Shoes);
 					Scene::scene->PushDelete(obj);
+					std::cout << "Shoes - " << obj->obj_num << std::endl;
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Ball]) {
 					gameObject->Item_bag.push_back(Ball);
 					Scene::scene->PushDelete(obj);
+
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Cube] && obj->GetComponent<DestroyEffect>()) {
@@ -60,17 +63,20 @@ void Collide::update()
 						obj->GetComponent<DestroyEffect>()->destroy = true;
 						gameObject->Item_bag.push_back(Cube);
 						gameObject->Item_bag.erase(p);
+						std::cout << "Cube - " << obj->obj_num << std::endl;
 						continue;
 					}
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Star]) {
 					gameObject->Item_bag.push_back(Star);
 					Scene::scene->PushDelete(obj);
+					std::cout << "Star - " << obj->obj_num << std::endl;
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Spike]) {
 					gameObject->Item_bag.push_back(Spike);
 					Scene::scene->PushDelete(obj);
+
 					continue;
 				}
 				gameObject->GetComponent<PlayerJump>()->jumping = false;
@@ -87,16 +93,19 @@ void Collide::update()
 				if (obj->VAO == Scene::scene->p_vao[Pickaxe]) {
 					gameObject->Item_bag.push_back(Pickaxe);
 					Scene::scene->PushDelete(obj);
+					std::cout << "pickaxe - " << obj->obj_num << std::endl;
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Shoes]) {
 					gameObject->Item_bag.push_back(Shoes);
 					Scene::scene->PushDelete(obj);
+					std::cout << "shoes - " << obj->obj_num << std::endl;
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Ball]) {
 					gameObject->Item_bag.push_back(Ball);
 					Scene::scene->PushDelete(obj);
+
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Cube] && obj->GetComponent<DestroyEffect>()) {
@@ -105,12 +114,14 @@ void Collide::update()
 						obj->GetComponent<DestroyEffect>()->destroy = true;
 						gameObject->Item_bag.push_back(Cube);
 						gameObject->Item_bag.erase(p);
+						std::cout << "cube - " << obj->obj_num << std::endl;
 						continue;
 					}
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Star]) {
 					gameObject->Item_bag.push_back(Star);
 					Scene::scene->PushDelete(obj);
+					std::cout << "star - " << obj->obj_num << std::endl;
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Spike]) {
