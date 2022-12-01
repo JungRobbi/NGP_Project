@@ -11,6 +11,7 @@
 #include "PlayerInfoLobbyFunc.h"
 #include "PlayerInforSceneFunc.h"
 #include "AddBlock.h"
+#include "CollideInfo.h"
 
 #define SERVERPORT 9000
 
@@ -88,6 +89,10 @@ DWORD WINAPI ClientThread(LPVOID arg)
 			MsgCommandQueue.push_back((AddBlock*)data);
 			break;
 		case MSG_COLLIDE:
+			data = new S_Collide;
+			::ZeroMemory(data, sizeof(data));
+			memcpy(((S_Collide*)data), buf, sizeof(buf));
+			MsgCommandQueue.push_back((S_Collide*)data);
 			break;
 		case MSG_LEAVE:
 			std::cout << "MSG_LEAVE2 === " << std::endl;
