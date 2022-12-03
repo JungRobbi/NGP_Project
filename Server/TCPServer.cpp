@@ -18,6 +18,10 @@
 
 std::list<GameData*> MsgCommandQueue{};
 std::list<SOCKET> ClientSockList;
+
+HANDLE hClientEvent[4];
+HANDLE hSendEvent;
+
 CRITICAL_SECTION cs;
 CRITICAL_SECTION socklist_cs;
 
@@ -37,11 +41,14 @@ DWORD WINAPI ClientThread(LPVOID arg)
 	inet_ntop(AF_INET, &clientaddr.sin_addr, addr, sizeof(addr));
 
 	while (1) {
-
 		char buf[52];
 		retval = recv(client_sock, buf, 52, 0);
 		if (retval == SOCKET_ERROR)
 			break;
+
+		//retval = WaitForSingleObject(hSendEvent, INFINITE);
+		//if (retval != WAIT_OBJECT_0) break;
+
 		int msg;
 		memcpy(&msg, buf, 4);
 	
@@ -106,10 +113,7 @@ DWORD WINAPI ClientThread(LPVOID arg)
 			break;
 		}
 		LeaveCriticalSection(&cs);
-
-		if (msg == MSG_LEAVE)
-			break;
-
+		SetEvent(hClientEvent[0]);
 		//// 메세지 보내기
 		////GAMEMSG TempMSG = MSG_PLAYER_INFO_LOBBY;
 		//sendMSG(client_sock, recv_msg);
@@ -139,6 +143,10 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 			continue;
 
 		EnterCriticalSection(&cs);
+
+		//int retv = WaitForSingleObject(hClientEvent[0], INFINITE);
+		//if (retv != WAIT_OBJECT_0) break;
+
 		GameData* data = MsgCommandQueue.front();
 
 		// 데이터 처리
@@ -247,6 +255,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 
 		MsgCommandQueue.pop_front();
 		LeaveCriticalSection(&cs);
+		SetEvent(hSendEvent);
 	}
 
 	return 0;
@@ -255,6 +264,11 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 
 int main(int argc, char* argv[])
 {
+	hSendEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
+	hClientEvent[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
+
+	SetEvent(hSendEvent);
+
 	int retval;
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)

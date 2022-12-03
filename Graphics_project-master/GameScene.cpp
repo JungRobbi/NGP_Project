@@ -24,9 +24,10 @@ GameScene::GameScene(int num_scene) : Scene()
 
 }
 
-GameScene::GameScene(int num_scene, int* index_list, GLuint* tex, GLuint* vao, GLuint* program) 
+GameScene::GameScene(int num_scene, int* index_list, GLuint* tex, GLuint* vao, GLuint* program)
 	: Scene(num_scene, index_list, tex, vao, program)
 {
+
 	n_scene = num_scene;
 	modelLocation = glGetUniformLocation(program[0], "model");
 	viewLocation = glGetUniformLocation(program[0], "view");
@@ -929,6 +930,9 @@ void GameScene::update()
 	switch (RecvMsg) // 메세지 해석
 	{
 	case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
+		if (!((PlayerInfoLobby*)RecvData)->GetID())
+			break;
+
 		std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 내 이름 - " << m_Name << std::endl;
 		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())!= 0) {
 			std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;

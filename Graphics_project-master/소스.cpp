@@ -43,6 +43,7 @@
 #include "PlayerInforSceneFunc.h"
 #include "AddBlock.h"
 #include "CollideInfo.h"
+#include "OtherPlayer.h"
 
 CRITICAL_SECTION cs;
 
@@ -912,8 +913,7 @@ void keyboard(unsigned char key2, int x, int y) {
 
 	switch (key2) {
 	case ';':
-		sc.pop_front();
-		sc.emplace_back(new GameScene(1, num_shape_list, texture, VAO, s_program));
+		NestSceneChange();
 		break;
 	case 'r':
 		if (Scene::scene->p_player->GetComponent<Camera>()->state == FIRST_TO_TOP ||
@@ -1073,7 +1073,16 @@ void NestSceneChange()
 		Scene::scene->n_scene++;
 		return;
 	}
-	sc.emplace_back(new GameScene(Scene::scene->n_scene + 1, num_shape_list, texture, VAO, s_program));
+
+	auto gs = new GameScene(Scene::scene->n_scene + 1, num_shape_list, texture, VAO, s_program);
+
+	if ((*p)->other_player) {
+		gs->other_player->GetComponent<OtherPlayer>()->pos = (*p)->other_player->GetComponent<OtherPlayer>()->pos;
+		gs->other_player->GetComponent<OtherPlayer>()->color = (*p)->other_player->GetComponent<OtherPlayer>()->color;
+	}
+
+	sc.push_back(gs);
+	
 	sc.erase(p);
 }
 
