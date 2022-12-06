@@ -4,6 +4,7 @@
 #include <glm/gtc/matrix_transform.hpp>
 #include "Component.h"
 
+
 struct  BoundingBox
 {
     float minX, maxX, minY, maxY, minZ, maxZ;

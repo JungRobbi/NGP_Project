@@ -20,7 +20,7 @@ enum GAMEMSG
 class GameData
 {
 public:
-	GameData() { msg = -1; }
+	GameData() { msg = MSG_NORMAL; }
 	~GameData() {}
 
 	int GetMsg() { return msg; }

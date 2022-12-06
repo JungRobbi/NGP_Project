@@ -42,6 +42,7 @@
 #include "PlayerInfoLobbyFunc.h"
 #include "PlayerInforSceneFunc.h"
 #include "AddBlock.h"
+#include "CollideInfo.h"
 
 CRITICAL_SECTION cs;
 
@@ -1091,8 +1092,8 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		{
 		case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
 			RecvData = new PlayerInfoLobby{ recvPlayerInfoLobby(sock) };
+			std::cout << "\n서버에서 받음\n" << std::endl;
 			std::cout << "ID - " << ((PlayerInfoLobby*)RecvData)->GetID() << std::endl;
-			std::cout << "Ready. R - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << "\nReady. G - " << ((PlayerInfoLobby*)RecvData)->GetReady().y << "\nReady. B - " << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl<<std::endl;
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			RecvData = new PlayerInfoScene{ recvPlayerInfoScene(sock) };
@@ -1104,6 +1105,7 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			RecvData = new AddBlock{ recvAddBlock(sock) };
 			break;
 		case MSG_COLLIDE:
+			RecvData = new S_Collide{ recvCollideInfo(sock) };
 			break;
 		case MSG_LEAVE:
 			break;

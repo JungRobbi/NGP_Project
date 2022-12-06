@@ -929,9 +929,9 @@ void GameScene::update()
 	switch (RecvMsg) // 메세지 해석
 	{
 	case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
-		std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 내 이름 - " << m_Name << std::endl;
+		std::cout << "\n Other Player 받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 내 이름 - " << m_Name << std::endl;
 		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())!= 0) {
-			std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
+			std::cout << "Other Player 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
 			strcpy(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoLobby*)RecvData)->GetID());
 			other_player->GetComponent<OtherPlayer>()->color = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
 		}
@@ -940,7 +940,7 @@ void GameScene::update()
 
 	case MSG_PLAYER_INFO_SCENE:
 
-		if (!strcmp(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoScene*)RecvData)->GetID()))
+		if (strcmp(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoScene*)RecvData)->GetID())==0)
 			other_player->GetComponent<OtherPlayer>()->pos = glm::vec3(((PlayerInfoScene*)RecvData)->GetPos().x, ((PlayerInfoScene*)RecvData)->GetPos().y, ((PlayerInfoScene*)RecvData)->GetPos().z);
 		break;
 	case MSG_CHAT:
@@ -949,6 +949,38 @@ void GameScene::update()
 		add_block = true;
 		break;
 	case MSG_COLLIDE:
+		std::cout << ((S_Collide*)RecvData)->GetItem_index() << std::endl;
+		for (auto obj : gameObjects)
+		{
+			if (obj->obj_num == ((S_Collide*)RecvData)->GetItem_index())
+			{
+				if (obj->VAO == p_vao[Pickaxe])
+				{
+					p_player->Item_bag.push_back(Pickaxe);
+					PushDelete(obj);
+				}
+
+				if (obj->VAO == p_vao[Shoes])
+				{
+					p_player->Item_bag.push_back(Shoes);
+					PushDelete(obj);
+				}
+
+				if (obj->VAO == p_vao[Cube] && obj->GetComponent<DestroyEffect>())
+				{
+					obj->GetComponent<DestroyEffect>()->destroy = true;
+					p_player->Item_bag.push_back(Cube);
+				}
+
+				if (obj->VAO == p_vao[Star])
+				{
+					p_player->Item_bag.push_back(Star);
+					PushDelete(obj);
+				}
+
+			}
+		}
+		
 		break;
 	case MSG_LEAVE:
 		break;
