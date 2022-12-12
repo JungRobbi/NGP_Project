@@ -848,7 +848,8 @@ void Mouse(int button, int state, int x, int y)
 		if (n_model == Cube) {
 			auto p = find(Scene::scene->p_player->Item_bag.begin(), Scene::scene->p_player->Item_bag.end(), Cube);
 			if (p != Scene::scene->p_player->Item_bag.end()) {
-				sendAddBlock(sock, AddBlock{MSG_ADD_BLOCK, Vector3{msx*15.0f,8.0,-msy*15.0f} });
+				AddBlock ab = { MSG_ADD_BLOCK, Vector3{msx * 15.0f,8.0,-msy * 15.0f} };
+				sendAddBlock(sock, ab);
 				Scene::scene->p_player->Item_bag.erase(p);
 			}
 			std::cout << " -- " << msx * 15.0f << ", " << -msy * 15.0f << std::endl;
