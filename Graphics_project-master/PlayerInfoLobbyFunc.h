@@ -3,7 +3,7 @@
 #include "GameData.h"
 
 
-int sendPlayerInfoLobby(SOCKET sock, PlayerInfoLobby data)
+int sendPlayerInfoLobby(SOCKET& sock, PlayerInfoLobby& data)
 {
 	int retval;
 	retval = send(sock, (char*)&data, sizeof(PlayerInfoLobby), 0);
@@ -15,7 +15,7 @@ int sendPlayerInfoLobby(SOCKET sock, PlayerInfoLobby data)
 
 }
 
-PlayerInfoLobby recvPlayerInfoLobby(SOCKET sock)
+PlayerInfoLobby recvPlayerInfoLobby(SOCKET& sock)
 {
 	int retval;
 	PlayerInfoLobby data;

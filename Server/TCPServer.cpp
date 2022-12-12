@@ -30,7 +30,9 @@ DWORD WINAPI ClientThread(LPVOID arg)
 	std::string m_Name;
 	int retval;
 	SOCKET client_sock = (SOCKET)arg;
+	EnterCriticalSection(&socklist_cs);
 	ClientSockList.push_back(SOCKET{ client_sock });
+	LeaveCriticalSection(&socklist_cs);
 	struct sockaddr_in clientaddr;
 	char addr[INET_ADDRSTRLEN];
 	int addrlen;
@@ -51,23 +53,11 @@ DWORD WINAPI ClientThread(LPVOID arg)
 
 		int msg;
 		memcpy(&msg, buf, 4);
-	
-
-		GAMEMSG recv_msg = MSG_CHAT;
 
 		EnterCriticalSection(&cs);
 
 		if (msg == MSG_LEAVE) break;
 		
-
-		if (recv_msg == MSG_LEAVE) {
-			std::cout << "MSG_LEAVE1 == " << std::endl;
-			break;
-		}
-		if (recv_msg == -1) {
-			std::cout << "SOCKET_ERROR == " << std::endl;
-			break;
-		}
 		// 메세지 해석 -> 데이터 받기 -> 메세지 큐에 입력
 
 		//GameData* gamedata{};
@@ -113,7 +103,6 @@ DWORD WINAPI ClientThread(LPVOID arg)
 			break;
 		}
 		LeaveCriticalSection(&cs);
-		SetEvent(hClientEvent[0]);
 		//// 메세지 보내기
 		////GAMEMSG TempMSG = MSG_PLAYER_INFO_LOBBY;
 		//sendMSG(client_sock, recv_msg);
@@ -139,123 +128,126 @@ DWORD WINAPI ClientThread(LPVOID arg)
 DWORD WINAPI Cacul_Execute(LPVOID arg)
 {
 	while (1) {
-		if (MsgCommandQueue.empty() || ClientSockList.empty())
-			continue;
-
 		EnterCriticalSection(&cs);
 
-		//int retv = WaitForSingleObject(hClientEvent[0], INFINITE);
-		//if (retv != WAIT_OBJECT_0) break;
+		while (!MsgCommandQueue.empty()) {
+			EnterCriticalSection(&socklist_cs);
+			if (ClientSockList.empty()) {
+				MsgCommandQueue.clear();
+				break;
+			}
 
-		GameData* data = MsgCommandQueue.front();
+			//int retv = WaitForSingleObject(hClientEvent[0], INFINITE);
+			//if (retv != WAIT_OBJECT_0) break;
 
-		// 데이터 처리
+			GameData* data = MsgCommandQueue.front();
 
-		//std::cout << data->GetMsg() << std::endl;
+			// 데이터 처리
 
-		switch (data->GetMsg())
-		{
-		case MSG_PLAYER_INFO_LOBBY:
-			std::cout << "MSG_PLAYER_INFO_LOBBY" << std::endl;
-			std::cout << ((PlayerInfoLobby*)data)->GetID() << std::endl;
-			std::cout << ((PlayerInfoLobby*)data)->GetReady().x << std::endl << std::endl;
+			//std::cout << data->GetMsg() << std::endl;
 
-			break;
-		case MSG_PLAYER_INFO_SCENE:
-			//std::cout << "MSG_PLAYER_INFO_SCENE" << std::endl;
-			break;
-		case MSG_CHAT:
-			break;
-		case MSG_ADD_BLOCK:
-			std::cout << "MSG_ADDBLOCK" << std::endl;
-			break;
-		case MSG_COLLIDE:
-			break;
-		case MSG_LEAVE:
-			break;
-		case MSG_GAMECLEAR:
-			break;
-		case MSG_PAUSE:
-			break;
-		default:
-			break;
+			switch (data->GetMsg())
+			{
+			case MSG_PLAYER_INFO_LOBBY:
+				std::cout << "MSG_PLAYER_INFO_LOBBY" << std::endl;
+				std::cout << ((PlayerInfoLobby*)data)->GetID() << std::endl;
+				std::cout << ((PlayerInfoLobby*)data)->GetReady().x << std::endl << std::endl;
+
+				break;
+			case MSG_PLAYER_INFO_SCENE:
+				//std::cout << "MSG_PLAYER_INFO_SCENE" << std::endl;
+				break;
+			case MSG_CHAT:
+				break;
+			case MSG_ADD_BLOCK:
+				std::cout << "MSG_ADDBLOCK" << std::endl;
+				break;
+			case MSG_COLLIDE:
+				break;
+			case MSG_LEAVE:
+				break;
+			case MSG_GAMECLEAR:
+				break;
+			case MSG_PAUSE:
+				break;
+			default:
+				break;
+			}
+		
+			switch (data->GetMsg())
+			{
+			case MSG_PLAYER_INFO_LOBBY:
+				for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
+					std::cout << " SOCKET - " << *p << std::endl << std::endl;
+
+					sendMSG(*p, MSG_PLAYER_INFO_LOBBY);
+
+					// 데이터 보내기
+					int retval = sendPlayerInfoLobby(*p, PlayerInfoLobby{ data->GetMsg(), ((PlayerInfoLobby*)data)->GetID(), ((PlayerInfoLobby*)data)->GetReady() });
+					if (retval == -1) {
+						err_display("SendPlayerInfoLobby");
+						break;
+					}
+				}
+				break;
+			case MSG_PLAYER_INFO_SCENE:
+				for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
+					//std::cout << " SOCKET - " << *p << std::endl << std::endl;
+
+					sendMSG(*p, MSG_PLAYER_INFO_SCENE);
+
+					// 데이터 보내기
+					int retval = sendPlayerInfoScene(*p, PlayerInfoScene{ data->GetMsg(), ((PlayerInfoScene*)data)->GetPos(), ((PlayerInfoScene*)data)->GetID() });
+					if (retval == -1) {
+						err_display("SendPlayerInfoScene");
+						break;
+					}
+				}
+				break;
+			case MSG_CHAT:
+				break;
+			case MSG_ADD_BLOCK:
+				for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
+					std::cout << " SOCKET - " << *p << std::endl << std::endl;
+
+					sendMSG(*p, MSG_ADD_BLOCK);
+
+					// 데이터 보내기
+					int retval = sendAddBlock(*p, AddBlock{ data->GetMsg(), ((AddBlock*)data)->GetPosition() });
+					if (retval == -1) {
+						err_display("SendAddBlock");
+						break;
+					}
+				}
+				break;
+			case MSG_COLLIDE:
+				for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
+					//std::cout << " SOCKET - " << *p << std::endl << std::endl;
+
+					sendMSG(*p, MSG_COLLIDE);
+
+					// 데이터 보내기
+					int retval = sendCollideInfo(*p, S_Collide{ data->GetMsg(), ((S_Collide*)data)->GetItem_index() });
+					if (retval == -1) {
+						err_display("SendCollide");
+						break;
+					}
+				}
+				break;
+			case MSG_LEAVE:
+				break;
+			case MSG_GAMECLEAR:
+				break;
+			case MSG_PAUSE:
+				break;
+			default:
+				break;
+			}
+			LeaveCriticalSection(&socklist_cs);
+			MsgCommandQueue.pop_front();
 		}
-		//std::cout << " ClientSockList.size() - " << ClientSockList.size() << std::endl << std::endl;
-		EnterCriticalSection(&socklist_cs);
-		switch (data->GetMsg())
-		{
-		case MSG_PLAYER_INFO_LOBBY:
-			for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
-				std::cout << " SOCKET - " << *p << std::endl << std::endl;
-
-				sendMSG(*p, MSG_PLAYER_INFO_LOBBY);
-
-				// 데이터 보내기
-				int retval = sendPlayerInfoLobby(*p, PlayerInfoLobby{ data->GetMsg(), ((PlayerInfoLobby*)data)->GetID(), ((PlayerInfoLobby*)data)->GetReady() });
-				if (retval == -1) {
-					err_display("SendPlayerInfoLobby");
-					break;
-				}
-			}
-			break;
-		case MSG_PLAYER_INFO_SCENE:
-			for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
-				//std::cout << " SOCKET - " << *p << std::endl << std::endl;
-
-				sendMSG(*p, MSG_PLAYER_INFO_SCENE);
-
-				// 데이터 보내기
-				int retval = sendPlayerInfoScene(*p, PlayerInfoScene{ data->GetMsg(), ((PlayerInfoScene*)data)->GetPos(), ((PlayerInfoScene*)data)->GetID()});
-				if (retval == -1) {
-					err_display("SendPlayerInfoScene");
-					break;
-				}
-			}
-			break;
-		case MSG_CHAT:
-			break;
-		case MSG_ADD_BLOCK:
-			for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
-				std::cout << " SOCKET - " << *p << std::endl << std::endl;
-
-				sendMSG(*p, MSG_ADD_BLOCK);
-
-				// 데이터 보내기
-				int retval = sendAddBlock(*p, AddBlock{ data->GetMsg(), ((AddBlock*)data)->GetPosition() });
-				if (retval == -1) {
-					err_display("SendAddBlock");
-					break;
-				}
-			}
-			break;
-		case MSG_COLLIDE:
-			for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
-				//std::cout << " SOCKET - " << *p << std::endl << std::endl;
-
-				sendMSG(*p, MSG_COLLIDE);
-
-				// 데이터 보내기
-				int retval = sendCollideInfo(*p, S_Collide{ data->GetMsg(), ((S_Collide*)data)->GetItem_index()});
-				if (retval == -1) {
-					err_display("SendCollide");
-					break;
-				}
-			}
-			break;
-		case MSG_LEAVE:
-			break;
-		case MSG_GAMECLEAR:
-			break;
-		case MSG_PAUSE:
-			break;
-		default:
-			break;
-		}
-		LeaveCriticalSection(&socklist_cs);
-
-		MsgCommandQueue.pop_front();
 		LeaveCriticalSection(&cs);
-		SetEvent(hSendEvent);
+
 	}
 
 	return 0;

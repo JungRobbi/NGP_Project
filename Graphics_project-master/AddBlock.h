@@ -2,7 +2,7 @@
 #include "Common.h"
 #include "GameData.h"
 
-void sendAddBlock(SOCKET sock, AddBlock data)
+void sendAddBlock(SOCKET& sock, AddBlock& data)
 {
 	int retval;
 	retval = send(sock, (char*)&data, sizeof(AddBlock), 0);
@@ -13,7 +13,7 @@ void sendAddBlock(SOCKET sock, AddBlock data)
 	}
 }
 
-AddBlock recvAddBlock(SOCKET sock)
+AddBlock recvAddBlock(SOCKET& sock)
 {
 	int retval;
 	AddBlock data;

@@ -12,7 +12,6 @@
 extern bool key[256];
 extern SOCKET sock;
 
-
 static BoundingBox BoundBox_Cube{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f};
 static BoundingBox BoundBox_Star{ 0.0f, 0.0f, 0.0f, 0.0f, 0.0f, 0.0f };
 
@@ -39,15 +38,17 @@ void Collide::update()
 		if (gameObject == Scene::scene->p_player) {
 			if (glm::distance(obj->GetComponent<Transform3D>()->position, gameObject->GetComponent<Transform3D>()->position) > 5.0f)
 				continue;
-
+		
 			if (CheckBoxtoBox(sub_BoundBox, obj->GetComponent<Collide>()->BoundBox)) {
 				
 				if (obj->VAO == Scene::scene->p_vao[Pickaxe]) {
-					sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
+					S_Collide col = { MSG_COLLIDE, obj->obj_num };
+					sendCollideInfo(sock, col);
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Shoes]) {
-					sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
+					S_Collide col = { MSG_COLLIDE, obj->obj_num };
+					sendCollideInfo(sock, col);
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Ball]) {
@@ -60,12 +61,14 @@ void Collide::update()
 					auto p = find(gameObject->Item_bag.begin(), gameObject->Item_bag.end(), Pickaxe);
 					if (p != gameObject->Item_bag.end()) {
 						gameObject->Item_bag.erase(p);
-						sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
+						S_Collide col = { MSG_COLLIDE, obj->obj_num };
+						sendCollideInfo(sock, col);
 						continue;
 					}
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Star]) {
-					sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
+					S_Collide col = { MSG_COLLIDE, obj->obj_num };
+					sendCollideInfo(sock, col);
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Spike]) {
@@ -86,13 +89,15 @@ void Collide::update()
 			}
 			else if (CheckBoxtoBox(BoundBox, obj->GetComponent<Collide>()->BoundBox)) {
 				if (obj->VAO == Scene::scene->p_vao[Pickaxe]) {
-					sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
+					S_Collide col = { MSG_COLLIDE, obj->obj_num };
+					sendCollideInfo(sock, col);
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Shoes]) {
 					gameObject->Item_bag.push_back(Shoes);
 					Scene::scene->PushDelete(obj);
-					sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
+					S_Collide col = { MSG_COLLIDE, obj->obj_num };
+					sendCollideInfo(sock, col);
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Ball]) {
@@ -107,14 +112,16 @@ void Collide::update()
 						obj->GetComponent<DestroyEffect>()->destroy = true;
 						gameObject->Item_bag.push_back(Cube);
 						gameObject->Item_bag.erase(p);
-						sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
+						S_Collide col = { MSG_COLLIDE, obj->obj_num };
+						sendCollideInfo(sock, col);
 						continue;
 					}
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Star]) {
 					gameObject->Item_bag.push_back(Star);
 					Scene::scene->PushDelete(obj);
-					sendCollideInfo(sock, S_Collide{ MSG_COLLIDE, obj->obj_num });
+					S_Collide col = { MSG_COLLIDE, obj->obj_num };
+					sendCollideInfo(sock, col);
 					continue;
 				}
 				else if (obj->VAO == Scene::scene->p_vao[Spike]) {
@@ -148,6 +155,7 @@ void Collide::update()
 					Scene::scene->p_player->GetComponent<Transform3D>()->direction.z -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 				}
 			}
+	
 		}
 		else {
 			if (gameObject->VAO == Scene::scene->p_vao[Star] || gameObject->VAO == Scene::scene->p_vao[Pickaxe] || gameObject->VAO == Scene::scene->p_vao[Shoes] || gameObject->VAO == Scene::scene->p_vao[Ball])
