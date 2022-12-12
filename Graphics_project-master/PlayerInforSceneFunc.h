@@ -3,7 +3,7 @@
 #include "GameData.h"
 
 
-inline void sendPlayerInfoScene(SOCKET sock, PlayerInfoScene data)
+inline void sendPlayerInfoScene(SOCKET& sock, PlayerInfoScene& data)
 {
 	int retval;
 	retval = send(sock, (char*)&data, sizeof(PlayerInfoScene), 0);
@@ -15,7 +15,7 @@ inline void sendPlayerInfoScene(SOCKET sock, PlayerInfoScene data)
 
 }
 
-inline PlayerInfoScene recvPlayerInfoScene(SOCKET sock)
+inline PlayerInfoScene recvPlayerInfoScene(SOCKET& sock)
 {
 	int retval;
 	PlayerInfoScene data;

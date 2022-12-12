@@ -30,7 +30,9 @@ DWORD WINAPI ClientThread(LPVOID arg)
 	std::string m_Name;
 	int retval;
 	SOCKET client_sock = (SOCKET)arg;
+	EnterCriticalSection(&socklist_cs);
 	ClientSockList.push_back(SOCKET{ client_sock });
+	LeaveCriticalSection(&socklist_cs);
 	struct sockaddr_in clientaddr;
 	char addr[INET_ADDRSTRLEN];
 	int addrlen;
@@ -129,6 +131,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 		EnterCriticalSection(&cs);
 
 		while (!MsgCommandQueue.empty()) {
+			EnterCriticalSection(&socklist_cs);
 			if (ClientSockList.empty()) {
 				MsgCommandQueue.clear();
 				break;
@@ -170,8 +173,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 			default:
 				break;
 			}
-			//std::cout << " ClientSockList.size() - " << ClientSockList.size() << std::endl << std::endl;
-			EnterCriticalSection(&socklist_cs);
+		
 			switch (data->GetMsg())
 			{
 			case MSG_PLAYER_INFO_LOBBY:

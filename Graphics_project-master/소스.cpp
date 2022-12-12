@@ -147,6 +147,8 @@ std::list<Scene*> sc;
 int Pcolor;
 
 SOCKET sock;
+GameData* RecvData;
+GAMEMSG recv_msg;
 
 void SceneChange(int num_scene);
 void ResetChange();
@@ -218,11 +220,12 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 		// 메세지 보내기
 		GAMEMSG TempMSG;
 
+		PlayerInfoLobby info{ MSG_PLAYER_INFO_LOBBY, (char*)m_Name.c_str(), color };
+
 		switch (comm)
 		{
 		case MSG_PLAYER_INFO_LOBBY:
-			TempMSG = MSG_PLAYER_INFO_LOBBY;
-			retval = sendPlayerInfoLobby(sock, PlayerInfoLobby{ TempMSG, (char*)m_Name.c_str(), color });
+			retval = sendPlayerInfoLobby(sock, info);
 			if (retval == -1)
 				break;
 			break;
@@ -250,8 +253,6 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 		default:
 			break;
 		}
-
-		// 데이터 보내기
 		
 		
 
@@ -1088,15 +1089,11 @@ void NestSceneChange()
 
 DWORD WINAPI RecvThread(LPVOID temp)
 {
-	//SOCKET sock = (SOCKET)temp;
-	GAMEMSG recv_msg;
 	while (true) {
 		// 메세지 받기
+	//	EnterCriticalSection(&sockcs);
 		recv_msg = recvMSG(sock);
 		//printf("받은 메세지 : %d\n", recv_msg);
-
-		GameData* RecvData;
-
 		switch (recv_msg) // 메세지 해석
 		{
 		case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
@@ -1107,7 +1104,6 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			RecvData = new PlayerInfoScene{ recvPlayerInfoScene(sock) };
-
 			break;
 		case MSG_CHAT:
 			break;
@@ -1126,7 +1122,8 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		default:
 			break;
 		}
-		
+	//	LeaveCriticalSection(&sockcs);
+
 		EnterCriticalSection(&cs);
 		Scene::scene->RecvData = RecvData;
 		Scene::scene->RecvMsg = recv_msg;
