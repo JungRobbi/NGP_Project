@@ -925,7 +925,7 @@ void GameScene::update()
 	bool add_block = false;
 
 	if (n_scene >= 1) {
-		PlayerInfoScene ps = { MSG_PLAYER_INFO_SCENE, Vector3{p_player->GetComponent<Transform3D>()->position.x,p_player->GetComponent<Transform3D>()->position.y,p_player->GetComponent<Transform3D>()->position.z }, (char*)m_Name.c_str() }
+		PlayerInfoScene ps = { MSG_PLAYER_INFO_SCENE, Vector3{p_player->GetComponent<Transform3D>()->position.x,p_player->GetComponent<Transform3D>()->position.y,p_player->GetComponent<Transform3D>()->position.z }, (char*)m_Name.c_str() };
 		sendPlayerInfoScene(sock, ps);
 	}
 		
