@@ -45,6 +45,7 @@
 #include "CollideInfo.h"
 #include "OtherPlayer.h"
 #include "PlayerLeave.h"
+#include "Pause.h"
 
 CRITICAL_SECTION cs;
 
@@ -146,6 +147,7 @@ bool start = false;
 std::list<Scene*> sc;
 
 int Pcolor;
+bool b_PauseEnable = false;
 
 SOCKET sock;
 GameData* RecvData;
@@ -797,6 +799,9 @@ void Reshape(int w, int h)
 
 void Mouse(int button, int state, int x, int y)
 {
+	if (b_PauseEnable)
+		return;
+
 	if (button == GLUT_LEFT_BUTTON && state == GLUT_DOWN && Scene::scene->p_player->GetComponent<Camera>()->state == TOP_VIEW) {
 		if (n_model == Cube) {
 			auto p = find(Scene::scene->p_player->Item_bag.begin(), Scene::scene->p_player->Item_bag.end(), Cube);
@@ -827,6 +832,9 @@ void Motion(int x, int y)
 
 void Motion2(int x, int y)
 {
+	if (b_PauseEnable)
+		return;
+
 	if (Scene::scene->p_player->GetComponent<Camera>()->state == TOP_VIEW) {
 		msx = ((float)x - ((float)WINDOWX / (float)2)) / ((float)WINDOWX / (float)2);
 		msy = -((float)y - ((float)WINDOWY / (float)2)) / ((float)WINDOWY / (float)2);
@@ -895,8 +903,11 @@ void keyboard(unsigned char key2, int x, int y) {
 		}
 		break;
 	case 'p':
-		sc.clear();
-		sc.emplace_back(new GameScene(1, num_shape_list, texture, VAO, s_program));
+		if (b_PauseEnable)
+			b_PauseEnable = false;
+		else
+			b_PauseEnable = true;
+		sendPause(sock, Pause{ MSG_PAUSE, b_PauseEnable });
 		break;
 	case VK_SPACE:
 		if (Scene::scene->n_scene == 3)
@@ -926,73 +937,76 @@ void keyboard2(unsigned char key2, int x, int y) {
 
 void TimerFunction(int value) {
 
-	bool collide = false;
+	if (!b_PauseEnable) {
 
-	if (Scene::scene->p_player->GetComponent<Camera>()->state == FIRST_VIEW) {
-		if (key['a']) {						// 위로 이동
-			Scene::scene->p_player->GetComponent<Transform3D>()->position.x += sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-			Scene::scene->p_player->GetComponent<Transform3D>()->position.z -= cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-			Scene::scene->p_player->GetComponent<Transform3D>()->direction.x += sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-			Scene::scene->p_player->GetComponent<Transform3D>()->direction.z -= cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 
-		}
-		if (key['d']) {						// 아래로 이동
-			Scene::scene->p_player->GetComponent<Transform3D>()->position.x -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-			Scene::scene->p_player->GetComponent<Transform3D>()->position.z += cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-			Scene::scene->p_player->GetComponent<Transform3D>()->direction.x -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-			Scene::scene->p_player->GetComponent<Transform3D>()->direction.z += cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-		}
-		if (key['s']) {						// 왼쪽으로 이동
-			Scene::scene->p_player->GetComponent<Transform3D>()->position.x -= cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-			Scene::scene->p_player->GetComponent<Transform3D>()->position.z -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-			Scene::scene->p_player->GetComponent<Transform3D>()->direction.x -= cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-			Scene::scene->p_player->GetComponent<Transform3D>()->direction.z -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-		}
-		if (key['w']) {						// 오른쪽으로 이동
-			Scene::scene->p_player->GetComponent<Transform3D>()->position.x += cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-			Scene::scene->p_player->GetComponent<Transform3D>()->position.z += sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-			Scene::scene->p_player->GetComponent<Transform3D>()->direction.x += cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-			Scene::scene->p_player->GetComponent<Transform3D>()->direction.z += sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
-		}
-	}
-	else if (Scene::scene->p_player->GetComponent<Camera>()->state == TOP_VIEW) {
-		if (key['a']) {						// 위로 이동
-			Scene::scene->p_player->GetComponent<Camera>()->top_pos.x -= 0.1f;
-			Scene::scene->p_player->GetComponent<Camera>()->top_dir.x -= 0.1f;
-		}
-		if (key['d']) {						// 아래로 이동
-			Scene::scene->p_player->GetComponent<Camera>()->top_pos.x += 0.1f;
-			Scene::scene->p_player->GetComponent<Camera>()->top_dir.x += 0.1f;
-		}
-		if (key['s']) {						// 왼쪽으로 이동
-			Scene::scene->p_player->GetComponent<Camera>()->top_pos.z += 0.1f;
-			Scene::scene->p_player->GetComponent<Camera>()->top_dir.z += 0.1f;
-		}
-		if (key['w']) {						// 오른쪽으로 이동
-			Scene::scene->p_player->GetComponent<Camera>()->top_pos.z -= 0.1f;
-			Scene::scene->p_player->GetComponent<Camera>()->top_dir.z -= 0.1f;
-		}
-	}
+		bool collide = false;
 
-	{
-		auto p = find(Scene::scene->p_player->Item_bag.begin(), Scene::scene->p_player->Item_bag.end(), Star);
-		if (p != Scene::scene->p_player->Item_bag.end() && Scene::scene->n_scene != 6) {
-			NestSceneChange();
-		}
-	}
-	{
-		auto p = find(Scene::scene->p_player->Item_bag.begin(), Scene::scene->p_player->Item_bag.end(), Spike);
-		if (p != Scene::scene->p_player->Item_bag.end()) {
-			ResetChange();
-		}
-	}
-	{
-		auto p = find(Scene::scene->p_player->Item_bag.begin(), Scene::scene->p_player->Item_bag.end(), Ball);
-		if (p != Scene::scene->p_player->Item_bag.end()) {
-			ResetChange();
-		}
-	}
+		if (Scene::scene->p_player->GetComponent<Camera>()->state == FIRST_VIEW) {
+			if (key['a']) {						// 위로 이동
+				Scene::scene->p_player->GetComponent<Transform3D>()->position.x += sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+				Scene::scene->p_player->GetComponent<Transform3D>()->position.z -= cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+				Scene::scene->p_player->GetComponent<Transform3D>()->direction.x += sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+				Scene::scene->p_player->GetComponent<Transform3D>()->direction.z -= cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
 
+			}
+			if (key['d']) {						// 아래로 이동
+				Scene::scene->p_player->GetComponent<Transform3D>()->position.x -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+				Scene::scene->p_player->GetComponent<Transform3D>()->position.z += cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+				Scene::scene->p_player->GetComponent<Transform3D>()->direction.x -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+				Scene::scene->p_player->GetComponent<Transform3D>()->direction.z += cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+			}
+			if (key['s']) {						// 왼쪽으로 이동
+				Scene::scene->p_player->GetComponent<Transform3D>()->position.x -= cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+				Scene::scene->p_player->GetComponent<Transform3D>()->position.z -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+				Scene::scene->p_player->GetComponent<Transform3D>()->direction.x -= cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+				Scene::scene->p_player->GetComponent<Transform3D>()->direction.z -= sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+			}
+			if (key['w']) {						// 오른쪽으로 이동
+				Scene::scene->p_player->GetComponent<Transform3D>()->position.x += cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+				Scene::scene->p_player->GetComponent<Transform3D>()->position.z += sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+				Scene::scene->p_player->GetComponent<Transform3D>()->direction.x += cos((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+				Scene::scene->p_player->GetComponent<Transform3D>()->direction.z += sin((float)glm::radians(Scene::scene->p_player->GetComponent<Camera>()->fpsy)) * 0.04;
+			}
+		}
+		else if (Scene::scene->p_player->GetComponent<Camera>()->state == TOP_VIEW) {
+			if (key['a']) {						// 위로 이동
+				Scene::scene->p_player->GetComponent<Camera>()->top_pos.x -= 0.1f;
+				Scene::scene->p_player->GetComponent<Camera>()->top_dir.x -= 0.1f;
+			}
+			if (key['d']) {						// 아래로 이동
+				Scene::scene->p_player->GetComponent<Camera>()->top_pos.x += 0.1f;
+				Scene::scene->p_player->GetComponent<Camera>()->top_dir.x += 0.1f;
+			}
+			if (key['s']) {						// 왼쪽으로 이동
+				Scene::scene->p_player->GetComponent<Camera>()->top_pos.z += 0.1f;
+				Scene::scene->p_player->GetComponent<Camera>()->top_dir.z += 0.1f;
+			}
+			if (key['w']) {						// 오른쪽으로 이동
+				Scene::scene->p_player->GetComponent<Camera>()->top_pos.z -= 0.1f;
+				Scene::scene->p_player->GetComponent<Camera>()->top_dir.z -= 0.1f;
+			}
+		}
+
+		{
+			auto p = find(Scene::scene->p_player->Item_bag.begin(), Scene::scene->p_player->Item_bag.end(), Star);
+			if (p != Scene::scene->p_player->Item_bag.end() && Scene::scene->n_scene != 6) {
+				NestSceneChange();
+			}
+		}
+		{
+			auto p = find(Scene::scene->p_player->Item_bag.begin(), Scene::scene->p_player->Item_bag.end(), Spike);
+			if (p != Scene::scene->p_player->Item_bag.end()) {
+				ResetChange();
+			}
+		}
+		{
+			auto p = find(Scene::scene->p_player->Item_bag.begin(), Scene::scene->p_player->Item_bag.end(), Ball);
+			if (p != Scene::scene->p_player->Item_bag.end()) {
+				ResetChange();
+			}
+		}
+	}
 
 	glutPostRedisplay();
 
@@ -1078,6 +1092,18 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		case MSG_GAMECLEAR:
 			break;
 		case MSG_PAUSE:
+			RecvData = new Pause{ recvPause(sock) };
+			b_PauseEnable = ((Pause*)RecvData)->GetPause();
+			if (b_PauseEnable) {
+				for (int i{}; i < 3; ++i)
+					f_Light_ambients[i] = 0.05f;
+				std::cout << std::endl << " 게임이 중지되었습니다. " << std::endl << std::endl;
+			}
+			else {
+				for (int i{}; i < 3; ++i)
+					f_Light_ambients[i] = 0.3f;
+				std::cout << std::endl << " 게임이 재개되었습니다. " << std::endl << std::endl;
+			}
 			break;
 		default:
 			break;
@@ -1139,9 +1165,6 @@ DWORD WINAPI RecvThread(LPVOID temp)
 
 				}
 			}
-		}
-		else if (msg == MSG_PAUSE) {
-		
 		}
 
 		if (add_block) {
