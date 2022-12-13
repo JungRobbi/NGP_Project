@@ -924,8 +924,11 @@ void GameScene::update()
 
 	bool add_block = false;
 
-	if(n_scene>=1)
-		sendPlayerInfoScene(sock, PlayerInfoScene{ MSG_PLAYER_INFO_SCENE, Vector3{p_player->GetComponent<Transform3D>()->position.x,p_player->GetComponent<Transform3D>()->position.y,p_player->GetComponent<Transform3D>()->position.z }, (char*)m_Name.c_str()});
+	if (n_scene >= 1) {
+		PlayerInfoScene ps = { MSG_PLAYER_INFO_SCENE, Vector3{p_player->GetComponent<Transform3D>()->position.x,p_player->GetComponent<Transform3D>()->position.y,p_player->GetComponent<Transform3D>()->position.z }, (char*)m_Name.c_str() };
+		sendPlayerInfoScene(sock, ps);
+	}
+		
 	EnterCriticalSection(&cs);
 	switch (RecvMsg) // 메세지 해석
 	{
@@ -995,7 +998,6 @@ void GameScene::update()
 	default:
 		break;
 	}
-	RecvMsg = MSG_NORMAL;
 
 	if (add_block) {
 		auto box = CreateAirHardBox(num_shape_list, texture, VAO);
@@ -1004,6 +1006,9 @@ void GameScene::update()
 		box->texture = texture[4];
 		add_block = false;
 	}
+
+	RecvMsg = MSG_NORMAL;
+
 	LeaveCriticalSection(&cs);
 
 	auto player_tran = p_player->GetComponent<Transform3D>();
