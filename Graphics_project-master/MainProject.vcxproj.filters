@@ -172,7 +172,7 @@
     <ClInclude Include="CollideInfo.h">
       <Filter>소스 파일\Server</Filter>
     </ClInclude>
-    <ClInclude Include="GameClear.h">
+    <ClInclude Include="Pause.h">
       <Filter>소스 파일\Server</Filter>
     </ClInclude>
     <ClInclude Include="GameData.h">

@@ -13,6 +13,7 @@
 #include "AddBlock.h"
 #include "CollideInfo.h"
 #include "PlayerLeave.h"
+#include "Pause.h"
 
 #define SERVERPORT 9000
 
@@ -20,11 +21,10 @@
 std::list<GameData*> MsgCommandQueue{};
 std::list<SOCKET> ClientSockList;
 
-HANDLE hClientEvent[4];
-HANDLE hSendEvent;
-
 CRITICAL_SECTION cs;
 CRITICAL_SECTION socklist_cs;
+
+bool b_PauseEnable = false;
 
 DWORD WINAPI ClientThread(LPVOID arg)
 {
@@ -50,20 +50,12 @@ DWORD WINAPI ClientThread(LPVOID arg)
 		if (retval == SOCKET_ERROR)
 			break;
 
-		//retval = WaitForSingleObject(hSendEvent, INFINITE);
-		//if (retval != WAIT_OBJECT_0) break;
-
 		int msg;
 		memcpy(&msg, buf, 4);
 
 		EnterCriticalSection(&cs);
-
-		if (msg == MSG_LEAVE) break;
 		
 		// 메세지 해석 -> 데이터 받기 -> 메세지 큐에 입력
-
-		//GameData* gamedata{};
-
 		switch (msg) // 메세지 해석
 		{
 		case MSG_PLAYER_INFO_LOBBY:  // 데이터 받고 큐에 입력
@@ -93,12 +85,13 @@ DWORD WINAPI ClientThread(LPVOID arg)
 			memcpy(((S_Collide*)data), buf, sizeof(buf));
 			MsgCommandQueue.push_front((S_Collide*)data);
 			break;
-		case MSG_GAMECLEAR:
-			break;
 		case MSG_PAUSE:
+			data = new Pause;
+			::ZeroMemory(data, sizeof(data));
+			memcpy(((Pause*)data), buf, sizeof(buf));
+			MsgCommandQueue.push_front((Pause*)data);
 			break;
 		default:
-			//gamedata = new GameData();
 			break;
 		}
 		LeaveCriticalSection(&cs);
@@ -241,9 +234,14 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 					sendPlayerLeave(*p, Leave{ data->GetMsg(), ((Leave*)data)->GetID() });
 				}
 				break;
-			case MSG_GAMECLEAR:
-				break;
 			case MSG_PAUSE:
+				for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
+					std::cout << " SOCKET - " << *p << std::endl << std::endl;
+
+					sendMSG(*p, MSG_PAUSE);
+
+					sendPause(*p, Pause{ MSG_PAUSE, ((Pause*)data)->GetPause()});
+				}
 				break;
 			default:
 				break;
@@ -261,11 +259,6 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 
 int main(int argc, char* argv[])
 {
-	hSendEvent = CreateEvent(NULL, FALSE, FALSE, NULL);
-	hClientEvent[0] = CreateEvent(NULL, FALSE, FALSE, NULL);
-
-	SetEvent(hSendEvent);
-
 	int retval;
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)

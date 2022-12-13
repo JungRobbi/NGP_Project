@@ -1,24 +1,25 @@
 #pragma once
+
 #include "Common.h"
 #include "GameData.h"
 
 
-int sendPlayerInfoLobby(SOCKET& sock, PlayerInfoLobby& data)
+void sendPause(SOCKET sock, Pause data)
 {
 	int retval;
 	retval = send(sock, (char*)&data, 52, 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
-		return -1;
+		return;
 	}
-	return retval;
+
 
 }
 
-PlayerInfoLobby recvPlayerInfoLobby(SOCKET& sock)
+Pause recvPause(SOCKET sock)
 {
 	int retval;
-	PlayerInfoLobby data;
+	Pause data;
 	retval = recv(sock, (char*)&data, 52, 0);
 	return data;
 }
