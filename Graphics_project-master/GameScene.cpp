@@ -926,104 +926,10 @@ void GameScene::update()
 {
 	Scene::update();
 
-	bool add_block = false;
-
 	if (n_scene >= 1) {
 		PlayerInfoScene ps = { MSG_PLAYER_INFO_SCENE, Vector3{p_player->GetComponent<Transform3D>()->position.x,p_player->GetComponent<Transform3D>()->position.y,p_player->GetComponent<Transform3D>()->position.z }, (char*)m_Name.c_str() };
 		sendPlayerInfoScene(sock, ps);
 	}
-		
-	EnterCriticalSection(&cs);
-	switch (RecvMsg) // 메세지 해석
-	{
-	case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
-		if (!((PlayerInfoLobby*)RecvData)->GetID())
-			break;
-
-		std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 내 이름 - " << m_Name << std::endl;
-		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())!= 0) {
-			if (othercheck) {
-				std::cout << "Other Player 1 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
-				strcpy(ID[0], ((PlayerInfoLobby*)RecvData)->GetID());
-				color[0] = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
-				othercheck = true;
-			}
-			else {
-				std::cout << "Other Player 1 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
-				strcpy(ID[0], ((PlayerInfoLobby*)RecvData)->GetID());
-				color[0] = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
-			}
-		}
-		
-		break;                                                                                                                                                                                                              
-
-	case MSG_PLAYER_INFO_SCENE:
-		if (strcmp(Other1->GetComponent<OtherPlayer>()->ID, ((PlayerInfoScene*)RecvData)->GetID()) == 0)
-			Other1->GetComponent<OtherPlayer>()->pos = glm::vec3(((PlayerInfoScene*)RecvData)->GetPos().x, ((PlayerInfoScene*)RecvData)->GetPos().y, ((PlayerInfoScene*)RecvData)->GetPos().z);
-		if (strcmp(Other2->GetComponent<OtherPlayer>()->ID, ((PlayerInfoScene*)RecvData)->GetID()) == 0)
-			Other2->GetComponent<OtherPlayer>()->pos = glm::vec3(((PlayerInfoScene*)RecvData)->GetPos().x, ((PlayerInfoScene*)RecvData)->GetPos().y, ((PlayerInfoScene*)RecvData)->GetPos().z);
-		break;
-
-	case MSG_CHAT:
-		break;
-	case MSG_ADD_BLOCK:
-		add_block = true;
-		break;
-	case MSG_COLLIDE:
-		std::cout << ((S_Collide*)RecvData)->GetItem_index() << std::endl;
-		for (auto obj : gameObjects)
-		{
-			if (obj->obj_num == ((S_Collide*)RecvData)->GetItem_index())
-			{
-				if (obj->VAO == p_vao[Pickaxe])
-				{
-					p_player->Item_bag.push_back(Pickaxe);
-					PushDelete(obj);
-				}
-
-				if (obj->VAO == p_vao[Shoes])
-				{
-					p_player->Item_bag.push_back(Shoes);
-					PushDelete(obj);
-				}
-
-				if (obj->VAO == p_vao[Cube] && obj->GetComponent<DestroyEffect>())
-				{
-					obj->GetComponent<DestroyEffect>()->destroy = true;
-					p_player->Item_bag.push_back(Cube);
-				}
-
-				if (obj->VAO == p_vao[Star])
-				{
-					p_player->Item_bag.push_back(Star);
-					PushDelete(obj);
-				}
-
-			}
-		}
-		
-		break;
-	case MSG_LEAVE:
-		break;
-	case MSG_GAMECLEAR:
-		break;
-	case MSG_PAUSE:
-		break;
-	default:
-		break;
-	}
-
-	if (add_block) {
-		auto box = CreateAirHardBox(num_shape_list, texture, VAO);
-		box->AddComponent<Gravity>();
-		box->GetComponent<Transform3D>()->position = glm::vec3(((AddBlock*)RecvData)->GetPosition().x, ((AddBlock*)RecvData)->GetPosition().y, ((AddBlock*)RecvData)->GetPosition().z);
-		box->texture = texture[4];
-		add_block = false;
-	}
-
-	RecvMsg = MSG_NORMAL;
-
-	LeaveCriticalSection(&cs);
 
 	auto player_tran = p_player->GetComponent<Transform3D>();
 	auto player_camera = p_player->GetComponent<Camera>();

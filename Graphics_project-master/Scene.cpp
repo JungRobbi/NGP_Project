@@ -5,8 +5,11 @@
 Scene* Scene::scene{ nullptr };
 bool Scene::othercheck{false};
 
-char Scene::ID[10][2]{};
-glm::vec3 Scene::color[2]{};
+GameObject* Scene::Other1{ nullptr };
+GameObject* Scene::Other2{ nullptr };
+
+char Scene::ID[2][10];
+glm::vec3 Scene::color[2];
 
 extern int Pcolor;
 Scene::Scene()

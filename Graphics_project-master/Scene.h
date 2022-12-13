@@ -23,8 +23,6 @@ public:
 	static Scene* scene;
 
 	GameObject* p_player;
-	GameObject* Other1;
-	GameObject* Other2;
 
 	int n_scene;
 	int* p_index_list;
@@ -37,8 +35,11 @@ public:
 
 	static bool othercheck;
 
-	static char ID[10][2];
+	static char ID[2][10];
 	static glm::vec3 color[2];
+
+	static GameObject* Other1;
+	static GameObject* Other2;
 
 public:
 	GameObject* CreateEmpty();
