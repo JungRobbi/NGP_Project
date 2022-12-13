@@ -3,7 +3,7 @@
 #include <algorithm>
 
 Scene* Scene::scene{ nullptr };
-bool Scene::othercheck{false};
+int Scene::othercheck{0};
 
 GameObject* Scene::Other1{ nullptr };
 GameObject* Scene::Other2{ nullptr };

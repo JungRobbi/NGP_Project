@@ -33,7 +33,7 @@ public:
 	GameData* RecvData;
 	GAMEMSG RecvMsg;
 
-	static bool othercheck;
+	static int othercheck;
 
 	static char ID[2][10];
 	static glm::vec3 color[2];
