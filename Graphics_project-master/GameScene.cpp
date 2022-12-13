@@ -942,7 +942,6 @@ void GameScene::update()
 	{
 	case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
 		if (!((PlayerInfoLobby*)RecvData)->GetID())
-			std::cout << "아니에요" << std::endl;
 			break;
 
 		std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 내 이름 - " << m_Name << std::endl;
