@@ -7,7 +7,7 @@
 inline int sendCollideInfo(SOCKET& sock, S_Collide& data)
 {
 	int retval;
-	retval = send(sock, (char*)&data, sizeof(S_Collide), 0);
+	retval = send(sock, (char*)&data, 52, 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 		return -1;
@@ -21,6 +21,6 @@ inline S_Collide recvCollideInfo(SOCKET& sock)
 {
 	int retval;
 	S_Collide data;
-	retval = recv(sock, (char*)&data, sizeof(S_Collide), 0);
+	retval = recv(sock, (char*)&data, 52, 0);
 	return data;
 }

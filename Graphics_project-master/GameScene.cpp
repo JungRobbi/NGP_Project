@@ -54,10 +54,10 @@ GameScene::GameScene(int num_scene, int* index_list, GLuint* tex, GLuint* vao, G
 
 	Other1 = CreatePlayer(index_list, tex, vao);
 	Other2 = CreatePlayer(index_list, tex, vao);
-	strcpy(Other1->GetComponent<OtherPlayer>()->ID, ID[0]);
+	/*strcpy(Other1->GetComponent<OtherPlayer>()->ID, ID[0]);
 	strcpy(Other2->GetComponent<OtherPlayer>()->ID, ID[1]);
 	Other1->GetComponent<OtherPlayer>()->color = color[0];
-	Other2->GetComponent<OtherPlayer>()->color = color[1];
+	Other2->GetComponent<OtherPlayer>()->color = color[1];*/
 
 	// object
 	if (num_scene == 0) {

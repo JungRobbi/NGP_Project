@@ -1089,6 +1089,11 @@ void NestSceneChange()
 
 	auto gs = new GameScene(Scene::scene->n_scene + 1, num_shape_list, texture, VAO, s_program);
 
+	strcpy(Scene::scene->Other1->GetComponent<OtherPlayer>()->ID, Scene::scene->ID[0]);
+	strcpy(Scene::scene->Other2->GetComponent<OtherPlayer>()->ID, Scene::scene->ID[1]);
+	Scene::scene->Other1->GetComponent<OtherPlayer>()->color = Scene::scene->color[0];
+	Scene::scene->Other2->GetComponent<OtherPlayer>()->color = Scene::scene->color[1];
+
 	sc.push_back(gs);
 	
 	sc.erase(p);
