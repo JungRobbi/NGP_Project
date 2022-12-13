@@ -12,7 +12,10 @@ extern GLuint VAO[100];
 extern GLuint texture[40];
 extern int num_shape_list[10];
 extern CRITICAL_SECTION cs;
-bool come = true;
+bool othercheck = false;
+
+char ID[10][2];
+glm::vec3 color[2];
 
 GameScene::GameScene() : Scene()
 {
@@ -36,7 +39,7 @@ GameScene::GameScene(int num_scene, int* index_list, GLuint* tex, GLuint* vao, G
 	// player
 	p_player = CreateEmpty();
 	p_player->AddComponent<Transform3D>();
-	p_player->GetComponent<Transform3D>()->position = glm::vec3(0.0f, 0.0f, 0.0f);
+	p_player->GetComponent<Transform3D>()->position = glm::vec3(0.0f, 3.0f, 0.0f);
 	p_player->GetComponent<Transform3D>()->scale = glm::vec3(1.0f, 1.0f, 1.0f);
 	p_player->GetComponent<Transform3D>()->direction = glm::vec3(0.0f, 0.0f, -1.0f);
 
@@ -52,8 +55,13 @@ GameScene::GameScene(int num_scene, int* index_list, GLuint* tex, GLuint* vao, G
 
 	p_player->AddComponent<Gravity>();
 	p_player->AddComponent<PlayerJump>();
-	
-	other_player = CreatePlayer(index_list, tex, vao);
+
+	Other1 = CreatePlayer(index_list, tex, vao);
+	Other2 = CreatePlayer(index_list, tex, vao);
+	strcpy(Other1->GetComponent<OtherPlayer>()->ID, ID[0]);
+	strcpy(Other2->GetComponent<OtherPlayer>()->ID, ID[1]);
+	Other1->GetComponent<OtherPlayer>()->color = color[0];
+	Other2->GetComponent<OtherPlayer>()->color = color[1];
 
 	// object
 	if (num_scene == 0) {
@@ -938,18 +946,28 @@ void GameScene::update()
 
 		std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 내 이름 - " << m_Name << std::endl;
 		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())!= 0) {
-			std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
-			strcpy(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoLobby*)RecvData)->GetID());
-			other_player->GetComponent<OtherPlayer>()->color = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
+			if (othercheck) {
+				std::cout << "Other Player 1 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
+				strcpy(ID[0], ((PlayerInfoLobby*)RecvData)->GetID());
+				color[0] = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
+				othercheck = true;
+			}
+			else {
+				std::cout << "Other Player 1 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
+				strcpy(ID[0], ((PlayerInfoLobby*)RecvData)->GetID());
+				color[0] = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
+			}
 		}
 		
 		break;                                                                                                                                                                                                              
 
 	case MSG_PLAYER_INFO_SCENE:
-
-		if (!strcmp(other_player->GetComponent<OtherPlayer>()->ID, ((PlayerInfoScene*)RecvData)->GetID()))
-			other_player->GetComponent<OtherPlayer>()->pos = glm::vec3(((PlayerInfoScene*)RecvData)->GetPos().x, ((PlayerInfoScene*)RecvData)->GetPos().y, ((PlayerInfoScene*)RecvData)->GetPos().z);
+		if (strcmp(Other1->GetComponent<OtherPlayer>()->ID, ((PlayerInfoScene*)RecvData)->GetID()) == 0)
+			Other1->GetComponent<OtherPlayer>()->pos = glm::vec3(((PlayerInfoScene*)RecvData)->GetPos().x, ((PlayerInfoScene*)RecvData)->GetPos().y, ((PlayerInfoScene*)RecvData)->GetPos().z);
+		if (strcmp(Other2->GetComponent<OtherPlayer>()->ID, ((PlayerInfoScene*)RecvData)->GetID()) == 0)
+			Other2->GetComponent<OtherPlayer>()->pos = glm::vec3(((PlayerInfoScene*)RecvData)->GetPos().x, ((PlayerInfoScene*)RecvData)->GetPos().y, ((PlayerInfoScene*)RecvData)->GetPos().z);
 		break;
+
 	case MSG_CHAT:
 		break;
 	case MSG_ADD_BLOCK:
