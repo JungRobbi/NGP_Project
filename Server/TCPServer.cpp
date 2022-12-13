@@ -130,7 +130,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 	bool b_connect = false;
 	while (!b_connect) {
 		EnterCriticalSection(&socklist_cs);
-		if (ClientSockList.size() >= 2) {
+		if (ClientSockList.size() >= 3) {
 			std::cout << " LOBBY DATA Àü¼Û " << std::endl;
 			b_connect = true;
 

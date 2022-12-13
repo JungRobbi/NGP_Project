@@ -136,7 +136,6 @@ float f_Light_ambients[3];
 
 BoundingBox BoundBox[10];
 
-
 glm::mat4 TR = glm::mat4(1.0f);
 
 bool key[256];
@@ -1087,11 +1086,6 @@ void NestSceneChange()
 
 	auto gs = new GameScene(Scene::scene->n_scene + 1, num_shape_list, texture, VAO, s_program);
 
-	if ((*p)->other_player) {
-		gs->other_player->GetComponent<OtherPlayer>()->pos = (*p)->other_player->GetComponent<OtherPlayer>()->pos;
-		gs->other_player->GetComponent<OtherPlayer>()->color = (*p)->other_player->GetComponent<OtherPlayer>()->color;
-	}
-
 	sc.push_back(gs);
 	
 	sc.erase(p);
@@ -1112,8 +1106,6 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			RecvData = new PlayerInfoLobby{ recvPlayerInfoLobby(sock) };
 			std::cout << "\n서버에서 받음\n" << std::endl;
 			std::cout << "ID - " << ((PlayerInfoLobby*)RecvData)->GetID() << std::endl;
-			std::cout << "Ready. R - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << "\nReady. G - " << ((PlayerInfoLobby*)RecvData)->GetReady().y << "\nReady. B - " << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl<<std::endl;
-			b_playgame = true;
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			RecvData = new PlayerInfoScene{ recvPlayerInfoScene(sock) };
