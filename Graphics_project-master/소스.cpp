@@ -135,7 +135,6 @@ float f_Light_ambients[3];
 
 BoundingBox BoundBox[10];
 
-
 glm::mat4 TR = glm::mat4(1.0f);
 
 bool key[256];
@@ -1077,11 +1076,6 @@ void NestSceneChange()
 	}
 
 	auto gs = new GameScene(Scene::scene->n_scene + 1, num_shape_list, texture, VAO, s_program);
-
-	if ((*p)->other_player) {
-		gs->other_player->GetComponent<OtherPlayer>()->pos = (*p)->other_player->GetComponent<OtherPlayer>()->pos;
-		gs->other_player->GetComponent<OtherPlayer>()->color = (*p)->other_player->GetComponent<OtherPlayer>()->color;
-	}
 
 	sc.push_back(gs);
 	

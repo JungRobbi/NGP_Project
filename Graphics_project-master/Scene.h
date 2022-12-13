@@ -20,8 +20,8 @@ public:
 	static Scene* scene;
 
 	GameObject* p_player;
-	GameObject* other_player;
-
+	GameObject* Other1;
+	GameObject* Other2;
 
 	int n_scene;
 	int* p_index_list;
