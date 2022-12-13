@@ -14,7 +14,7 @@ extern int num_shape_list[10];
 extern CRITICAL_SECTION cs;
 bool othercheck = false;
 
-char ID[10][2];
+char ID[2][10];
 glm::vec3 color[2];
 
 GameScene::GameScene() : Scene()
@@ -945,6 +945,7 @@ void GameScene::update()
 			break;
 
 		std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 내 이름 - " << m_Name << std::endl;
+
 		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())!= 0) {
 			if (othercheck) {
 				std::cout << "Other Player 1 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
@@ -953,9 +954,9 @@ void GameScene::update()
 				othercheck = true;
 			}
 			else {
-				std::cout << "Other Player 1 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
-				strcpy(ID[0], ((PlayerInfoLobby*)RecvData)->GetID());
-				color[0] = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
+				std::cout << "Other Player 2 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
+				strcpy(ID[1], ((PlayerInfoLobby*)RecvData)->GetID());
+				color[1] = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
 			}
 		}
 		

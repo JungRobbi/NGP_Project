@@ -144,7 +144,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 					sendMSG(*p, MSG_PLAYER_INFO_LOBBY);
 
 					// 데이터 보내기
-					int retval = sendPlayerInfoLobby(*p, PlayerInfoLobby{ data->GetMsg(), ((PlayerInfoLobby*)data)->GetID(), ((PlayerInfoLobby*)data)->GetReady() });
+					int retval = sendPlayerInfoLobby(*p, PlayerInfoLobby{ MSG_PLAYER_INFO_LOBBY, ((PlayerInfoLobby*)data)->GetID(), ((PlayerInfoLobby*)data)->GetReady() });
 					if (retval == -1) {
 						err_display("SendPlayerInfoLobby");
 						break;

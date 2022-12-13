@@ -3,6 +3,11 @@
 #include <algorithm>
 
 Scene* Scene::scene{ nullptr };
+bool Scene::othercheck{false};
+
+char Scene::ID[10][2]{};
+glm::vec3 Scene::color[2]{};
+
 extern int Pcolor;
 Scene::Scene()
 {
