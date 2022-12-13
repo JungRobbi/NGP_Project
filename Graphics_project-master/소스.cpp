@@ -810,7 +810,6 @@ void Mouse(int button, int state, int x, int y)
 				sendAddBlock(sock, ab);
 				Scene::scene->p_player->Item_bag.erase(p);
 			}
-			std::cout << " -- " << msx * 15.0f << ", " << -msy * 15.0f << std::endl;
 		}
 		else if (n_model == Star) {
 			/*auto star = CreateStar(index_list, tex, vao);
