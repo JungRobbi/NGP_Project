@@ -18,7 +18,7 @@ void sendMSG(SOCKET sock, GAMEMSG data)
 GAMEMSG recvMSG(SOCKET sock)
 {
 	int retval;
-	GAMEMSG data;
+	GAMEMSG data = MSG_NORMAL;
 	retval = recv(sock, (char*)&data, sizeof(data), 0);
 	return data;
 }

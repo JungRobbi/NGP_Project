@@ -57,6 +57,7 @@ MCI_OPEN_PARMS mciOpen;
 MCI_PLAY_PARMS mciPlay;
 
 int dwID;
+bool b_playgame = false;
 
 using namespace std;
 
@@ -206,62 +207,65 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 	hThread = CreateThread(NULL, 0, RecvThread, (LPVOID)sock, 0, NULL);
 	CloseHandle(hThread);
 
+	PlayerInfoLobby info{ MSG_PLAYER_INFO_LOBBY, (char*)m_Name.c_str(), color };
+	std::cout << std::endl << " 접속 완료 " << std::endl;
+	retval = sendPlayerInfoLobby(sock, info);
 
 	// 데이터 통신에 사용할 변수
 
-	int comm;
-	// 서버와 데이터 통신
-	while (1) {
-		// 데이터 입력
-		printf("\nData Send : ");
-		std::cin >> comm;
+	//int comm;
+	//// 서버와 데이터 통신
+	//while (1) {
+	//	// 데이터 입력
+	//	printf("\nData Send : ");
+	//	std::cin >> comm;
 
-		// 메세지 보내기
-		GAMEMSG TempMSG;
+	//	// 메세지 보내기
+	//	GAMEMSG TempMSG;
 
-		PlayerInfoLobby info{ MSG_PLAYER_INFO_LOBBY, (char*)m_Name.c_str(), color };
+	//	PlayerInfoLobby info{ MSG_PLAYER_INFO_LOBBY, (char*)m_Name.c_str(), color };
 
-		switch (comm)
-		{
-		case MSG_PLAYER_INFO_LOBBY:
-			retval = sendPlayerInfoLobby(sock, info);
-			if (retval == -1)
-				break;
-			break;
-		case MSG_PLAYER_INFO_SCENE:
-			TempMSG = MSG_PLAYER_INFO_SCENE;
-			break;
-		case MSG_CHAT:
-			TempMSG = MSG_CHAT;
-			break;
-		case MSG_ADD_BLOCK:
-			TempMSG = MSG_ADD_BLOCK;
-			break;
-		case MSG_COLLIDE:
-			TempMSG = MSG_COLLIDE;
-			break;
-		case MSG_LEAVE:
-			TempMSG = MSG_LEAVE;
-			break;
-		case MSG_GAMECLEAR:
-			TempMSG = MSG_GAMECLEAR;
-			break;
-		case MSG_PAUSE:
-			TempMSG = MSG_PAUSE;
-			break;
-		default:
-			break;
-		}
-		
-		
+	//	switch (comm)
+	//	{
+	//	case MSG_PLAYER_INFO_LOBBY:
+	//		retval = sendPlayerInfoLobby(sock, info);
+	//		if (retval == -1)
+	//			break;
+	//		break;
+	//	case MSG_PLAYER_INFO_SCENE:
+	//		TempMSG = MSG_PLAYER_INFO_SCENE;
+	//		break;
+	//	case MSG_CHAT:
+	//		TempMSG = MSG_CHAT;
+	//		break;
+	//	case MSG_ADD_BLOCK:
+	//		TempMSG = MSG_ADD_BLOCK;
+	//		break;
+	//	case MSG_COLLIDE:
+	//		TempMSG = MSG_COLLIDE;
+	//		break;
+	//	case MSG_LEAVE:
+	//		TempMSG = MSG_LEAVE;
+	//		break;
+	//	case MSG_GAMECLEAR:
+	//		TempMSG = MSG_GAMECLEAR;
+	//		break;
+	//	case MSG_PAUSE:
+	//		TempMSG = MSG_PAUSE;
+	//		break;
+	//	default:
+	//		break;
+	//	}
+	//	
+	//	
 
-	}
+	//}
 
-	// 소켓 닫기
-	closesocket(sock);
+	//// 소켓 닫기
+	//closesocket(sock);
 
-	// 윈속 종료
-	WSACleanup();
+	//// 윈속 종료
+	//WSACleanup();
 	return 0;
 }
 
@@ -595,6 +599,11 @@ void Display()
 
 	glDisable(GL_CULL_FACE);
 	glDisable(GL_BLEND); // 블렌딩 해제
+
+	if (Scene::scene->n_scene == 0 && b_playgame) {
+		NestSceneChange();
+		b_playgame = false;
+	}
 
 	glutSwapBuffers();
 }
@@ -1089,6 +1098,8 @@ DWORD WINAPI RecvThread(LPVOID temp)
 	//	EnterCriticalSection(&sockcs);
 		recv_msg = recvMSG(sock);
 		//printf("받은 메세지 : %d\n", recv_msg);
+
+		EnterCriticalSection(&cs);
 		switch (recv_msg) // 메세지 해석
 		{
 		case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
@@ -1117,8 +1128,6 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			break;
 		}
 	//	LeaveCriticalSection(&sockcs);
-
-		EnterCriticalSection(&cs);
 		Scene::scene->RecvData = RecvData;
 		Scene::scene->RecvMsg = recv_msg;
 		LeaveCriticalSection(&cs);
@@ -1128,6 +1137,12 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		// 받은 데이터 출력
 		
 	}
+
+	// 소켓 닫기
+	closesocket(sock);
+
+	// 윈속 종료
+	WSACleanup();
 
 	return 0;
 }

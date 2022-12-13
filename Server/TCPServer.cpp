@@ -127,7 +127,38 @@ DWORD WINAPI ClientThread(LPVOID arg)
 
 DWORD WINAPI Cacul_Execute(LPVOID arg)
 {
-	while (1) {
+	bool b_connect = false;
+	while (!b_connect) {
+		EnterCriticalSection(&socklist_cs);
+		if (ClientSockList.size() >= 2) {
+			std::cout << " LOBBY DATA 전송 " << std::endl;
+			b_connect = true;
+
+			EnterCriticalSection(&cs);
+			while (!MsgCommandQueue.empty()) {
+				GameData* data = MsgCommandQueue.front();
+
+				for (auto p = ClientSockList.begin(); p != ClientSockList.end(); ++p) {
+					std::cout << " SOCKET - " << *p << std::endl << std::endl;
+
+					sendMSG(*p, MSG_PLAYER_INFO_LOBBY);
+
+					// 데이터 보내기
+					int retval = sendPlayerInfoLobby(*p, PlayerInfoLobby{ data->GetMsg(), ((PlayerInfoLobby*)data)->GetID(), ((PlayerInfoLobby*)data)->GetReady() });
+					if (retval == -1) {
+						err_display("SendPlayerInfoLobby");
+						break;
+					}
+				}
+
+				MsgCommandQueue.pop_front();
+			}
+			LeaveCriticalSection(&cs);
+		}
+		LeaveCriticalSection(&socklist_cs);
+	}
+
+	while (b_connect) {
 		EnterCriticalSection(&cs);
 
 		while (!MsgCommandQueue.empty()) {
@@ -143,37 +174,6 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 			GameData* data = MsgCommandQueue.front();
 
 			// 데이터 처리
-
-			//std::cout << data->GetMsg() << std::endl;
-
-			switch (data->GetMsg())
-			{
-			case MSG_PLAYER_INFO_LOBBY:
-				std::cout << "MSG_PLAYER_INFO_LOBBY" << std::endl;
-				std::cout << ((PlayerInfoLobby*)data)->GetID() << std::endl;
-				std::cout << ((PlayerInfoLobby*)data)->GetReady().x << std::endl << std::endl;
-
-				break;
-			case MSG_PLAYER_INFO_SCENE:
-				//std::cout << "MSG_PLAYER_INFO_SCENE" << std::endl;
-				break;
-			case MSG_CHAT:
-				break;
-			case MSG_ADD_BLOCK:
-				std::cout << "MSG_ADDBLOCK" << std::endl;
-				break;
-			case MSG_COLLIDE:
-				break;
-			case MSG_LEAVE:
-				break;
-			case MSG_GAMECLEAR:
-				break;
-			case MSG_PAUSE:
-				break;
-			default:
-				break;
-			}
-		
 			switch (data->GetMsg())
 			{
 			case MSG_PLAYER_INFO_LOBBY:
