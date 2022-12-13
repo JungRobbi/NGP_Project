@@ -12,10 +12,6 @@ extern GLuint VAO[100];
 extern GLuint texture[40];
 extern int num_shape_list[10];
 extern CRITICAL_SECTION cs;
-bool othercheck = false;
-
-char ID[10][2];
-glm::vec3 color[2];
 
 GameScene::GameScene() : Scene()
 {

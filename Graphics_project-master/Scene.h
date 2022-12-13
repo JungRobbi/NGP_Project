@@ -5,6 +5,9 @@
 #include <list>
 #include <queue>
 #include <deque>
+#include <glm/glm.hpp>
+#include <glm/ext.hpp>
+#include <glm/gtc/matrix_transform.hpp>
 
 #include "stdafx.h"
 #include "GameObject.h"
@@ -31,6 +34,11 @@ public:
 
 	GameData* RecvData;
 	GAMEMSG RecvMsg;
+
+	static bool othercheck;
+
+	static char ID[10][2];
+	static glm::vec3 color[2];
 
 public:
 	GameObject* CreateEmpty();
