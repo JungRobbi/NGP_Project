@@ -1098,10 +1098,14 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		recv_msg = recvMSG(sock);
 
 		EnterCriticalSection(&cs);
-		switch (recv_msg) // 메세지 해석
+		auto msg = recv_msg;
+		switch (msg) // 메세지 해석
 		{
 		case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
 			RecvData = new PlayerInfoLobby{ recvPlayerInfoLobby(sock) };
+			std::cout << "\n서버에서 받음\n" << std::endl;
+			std::cout << "ID - " << ((PlayerInfoLobby*)RecvData)->GetID() << std::endl;
+			b_playgame = true;
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			RecvData = new PlayerInfoScene{ recvPlayerInfoScene(sock) };
@@ -1123,9 +1127,26 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		default:
 			break;
 		}
+	//	LeaveCriticalSection(&sockcs);
+		if (msg == MSG_PLAYER_INFO_LOBBY) {  // 데이터 받기
+			std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 내 이름 - " << m_Name << std::endl;
+			if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(), (char*)m_Name.c_str()) != 0) {
+				if (Scene::scene->othercheck) {
+					std::cout << "Other Player 1 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
+					strcpy(Scene::scene->ID[0], ((PlayerInfoLobby*)RecvData)->GetID());
+					Scene::scene->color[0] = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
+					Scene::scene->othercheck = true;
+				}
+				else {
+					std::cout << "Other Player 1 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
+					strcpy(Scene::scene->ID[0], ((PlayerInfoLobby*)RecvData)->GetID());
+					Scene::scene->color[0] = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
+				}
+			}
+		}
 
 		Scene::scene->RecvData = RecvData;
-		Scene::scene->RecvMsg = recv_msg;
+		Scene::scene->RecvMsg = msg;
 		LeaveCriticalSection(&cs);
 
 		// data를 여기서 처리해야 함

@@ -121,7 +121,7 @@ DWORD WINAPI ClientThread(LPVOID arg)
 	//ClientSockList.remove_if([&client_sock](SOCKET a) { return a == client_sock; });
 	closesocket(client_sock);
 	printf("[TCP 서버] 클라이언트 종료: IP 주소=%s, 포트 번호=%d\n", addr, ntohs(clientaddr.sin_port));
-
+	std::cout << "연결된 클라이언트 (list size) - " << ClientSockList.size() << std::endl; 
 	return 0;
 }
 
@@ -144,7 +144,7 @@ DWORD WINAPI Cacul_Execute(LPVOID arg)
 					sendMSG(*p, MSG_PLAYER_INFO_LOBBY);
 
 					// 데이터 보내기
-					int retval = sendPlayerInfoLobby(*p, PlayerInfoLobby{ data->GetMsg(), ((PlayerInfoLobby*)data)->GetID(), ((PlayerInfoLobby*)data)->GetReady() });
+					int retval = sendPlayerInfoLobby(*p, PlayerInfoLobby{ MSG_PLAYER_INFO_LOBBY, ((PlayerInfoLobby*)data)->GetID(), ((PlayerInfoLobby*)data)->GetReady() });
 					if (retval == -1) {
 						err_display("SendPlayerInfoLobby");
 						break;
