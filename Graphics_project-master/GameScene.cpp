@@ -934,6 +934,11 @@ void GameScene::update()
 	auto player_tran = p_player->GetComponent<Transform3D>();
 	auto player_camera = p_player->GetComponent<Camera>();
 
+	strcpy(Scene::scene->Other1->GetComponent<OtherPlayer>()->ID, Scene::scene->ID[0]);
+	strcpy(Scene::scene->Other2->GetComponent<OtherPlayer>()->ID, Scene::scene->ID[1]);
+	Scene::scene->Other1->GetComponent<OtherPlayer>()->color = Scene::scene->color[0];
+	Scene::scene->Other2->GetComponent<OtherPlayer>()->color = Scene::scene->color[1];
+
 	player_tran->direction.x = cos(glm::radians(player_camera->fpsup)) * cos(glm::radians(player_camera->fpsy)) + player_tran->position.x;
 	player_tran->direction.y = sin(glm::radians(player_camera->fpsup)) + player_tran->position.y;
 	player_tran->direction.z = cos(glm::radians(player_camera->fpsup)) * sin(glm::radians(player_camera->fpsy)) + player_tran->position.z;
