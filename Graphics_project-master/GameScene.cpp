@@ -941,25 +941,6 @@ void GameScene::update()
 	switch (RecvMsg) // 메세지 해석
 	{
 	case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
-		if (!((PlayerInfoLobby*)RecvData)->GetID())
-			break;
-
-		std::cout << "받아온 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 내 이름 - " << m_Name << std::endl;
-
-		if (strcmp(((PlayerInfoLobby*)RecvData)->GetID(),(char*)m_Name.c_str())!= 0) {
-			if (othercheck) {
-				std::cout << "Other Player 1 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
-				strcpy(ID[0], ((PlayerInfoLobby*)RecvData)->GetID());
-				color[0] = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
-				othercheck = true;
-			}
-			else {
-				std::cout << "Other Player 2 이름 - " << ((PlayerInfoLobby*)RecvData)->GetID() << " 색상 - " << ((PlayerInfoLobby*)RecvData)->GetReady().x << ((PlayerInfoLobby*)RecvData)->GetReady().y << ((PlayerInfoLobby*)RecvData)->GetReady().z << std::endl;
-				strcpy(ID[1], ((PlayerInfoLobby*)RecvData)->GetID());
-				color[1] = glm::vec3(((PlayerInfoLobby*)RecvData)->GetReady().x, ((PlayerInfoLobby*)RecvData)->GetReady().y, ((PlayerInfoLobby*)RecvData)->GetReady().z);
-			}
-		}
-		
 		break;                                                                                                                                                                                                              
 
 	case MSG_PLAYER_INFO_SCENE:
