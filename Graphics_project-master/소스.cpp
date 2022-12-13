@@ -1094,18 +1094,14 @@ void NestSceneChange()
 DWORD WINAPI RecvThread(LPVOID temp)
 {
 	while (true) {
-		// 메세지 받기
-	//	EnterCriticalSection(&sockcs);
+
 		recv_msg = recvMSG(sock);
-		//printf("받은 메세지 : %d\n", recv_msg);
 
 		EnterCriticalSection(&cs);
 		switch (recv_msg) // 메세지 해석
 		{
 		case MSG_PLAYER_INFO_LOBBY:  // 데이터 받기
 			RecvData = new PlayerInfoLobby{ recvPlayerInfoLobby(sock) };
-			std::cout << "\n서버에서 받음\n" << std::endl;
-			std::cout << "ID - " << ((PlayerInfoLobby*)RecvData)->GetID() << std::endl;
 			break;
 		case MSG_PLAYER_INFO_SCENE:
 			RecvData = new PlayerInfoScene{ recvPlayerInfoScene(sock) };
@@ -1127,7 +1123,7 @@ DWORD WINAPI RecvThread(LPVOID temp)
 		default:
 			break;
 		}
-	//	LeaveCriticalSection(&sockcs);
+
 		Scene::scene->RecvData = RecvData;
 		Scene::scene->RecvMsg = recv_msg;
 		LeaveCriticalSection(&cs);
