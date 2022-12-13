@@ -13,10 +13,10 @@ void sendPlayerLeave(SOCKET sock, Leave data)
 
 }
 
-PlayerInfoScene recvPlayerLeave(SOCKET sock)
+Leave recvPlayerLeave(SOCKET sock)
 {
 	int retval;
-	PlayerInfoScene data;
+	Leave data;
 	retval = recv(sock, (char*)&data, sizeof(data), 0);
 	
 
