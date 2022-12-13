@@ -42,7 +42,7 @@ S_Collide::S_Collide(int datamsg, int index)
 Leave::Leave(int datamsg, char* id)
 {
 	msg = datamsg;
-	memset(ID, 0, sizeof(ID));
+	memset(ID, '\0', sizeof(ID));
 	strcpy(ID, id);
 }
 

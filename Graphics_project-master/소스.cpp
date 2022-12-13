@@ -44,6 +44,7 @@
 #include "AddBlock.h"
 #include "CollideInfo.h"
 #include "OtherPlayer.h"
+#include "PlayerLeave.h"
 
 CRITICAL_SECTION cs;
 
@@ -201,7 +202,6 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 	retval = connect(sock, (struct sockaddr*)&serveraddr, sizeof(serveraddr));
 	if (retval == SOCKET_ERROR) err_quit("connect()");
 
-
 	HANDLE hThread;
 
 	hThread = CreateThread(NULL, 0, RecvThread, (LPVOID)sock, 0, NULL);
@@ -211,61 +211,6 @@ DWORD WINAPI ConnectServer(LPVOID temp) {
 	std::cout << std::endl << " 접속 완료 " << std::endl;
 	retval = sendPlayerInfoLobby(sock, info);
 
-	// 데이터 통신에 사용할 변수
-
-	//int comm;
-	//// 서버와 데이터 통신
-	//while (1) {
-	//	// 데이터 입력
-	//	printf("\nData Send : ");
-	//	std::cin >> comm;
-
-	//	// 메세지 보내기
-	//	GAMEMSG TempMSG;
-
-	//	PlayerInfoLobby info{ MSG_PLAYER_INFO_LOBBY, (char*)m_Name.c_str(), color };
-
-	//	switch (comm)
-	//	{
-	//	case MSG_PLAYER_INFO_LOBBY:
-	//		retval = sendPlayerInfoLobby(sock, info);
-	//		if (retval == -1)
-	//			break;
-	//		break;
-	//	case MSG_PLAYER_INFO_SCENE:
-	//		TempMSG = MSG_PLAYER_INFO_SCENE;
-	//		break;
-	//	case MSG_CHAT:
-	//		TempMSG = MSG_CHAT;
-	//		break;
-	//	case MSG_ADD_BLOCK:
-	//		TempMSG = MSG_ADD_BLOCK;
-	//		break;
-	//	case MSG_COLLIDE:
-	//		TempMSG = MSG_COLLIDE;
-	//		break;
-	//	case MSG_LEAVE:
-	//		TempMSG = MSG_LEAVE;
-	//		break;
-	//	case MSG_GAMECLEAR:
-	//		TempMSG = MSG_GAMECLEAR;
-	//		break;
-	//	case MSG_PAUSE:
-	//		TempMSG = MSG_PAUSE;
-	//		break;
-	//	default:
-	//		break;
-	//	}
-	//	
-	//	
-
-	//}
-
-	//// 소켓 닫기
-	//closesocket(sock);
-
-	//// 윈속 종료
-	//WSACleanup();
 	return 0;
 }
 
@@ -1129,6 +1074,8 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			RecvData = new S_Collide{ recvCollideInfo(sock) };
 			break;
 		case MSG_LEAVE:
+			RecvData = new Leave{ recvPlayerLeave(sock) };
+			std::cout << std::endl << " 플레이어가 게임을 종료 했습니다. ID - " << ((Leave*)RecvData)->GetID() << std::endl << std::endl;
 			break;
 		case MSG_GAMECLEAR:
 			break;
@@ -1167,7 +1114,6 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			add_block = true;
 		}
 		else if (msg == MSG_COLLIDE) {
-			std::cout << ((S_Collide*)RecvData)->GetItem_index() << std::endl;
 			for (auto obj : Scene::scene->gameObjects)
 			{
 				if (obj->obj_num == ((S_Collide*)RecvData)->GetItem_index())
@@ -1200,12 +1146,6 @@ DWORD WINAPI RecvThread(LPVOID temp)
 			}
 		}
 		else if (msg == MSG_PAUSE) {
-		
-		}
-		else if (msg == MSG_LEAVE) {
-	
-		}
-		else if (msg == MSG_GAMECLEAR) {
 		
 		}
 

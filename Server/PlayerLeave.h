@@ -5,7 +5,7 @@
 void sendPlayerLeave(SOCKET sock, Leave data)
 {
 	int retval;
-	retval = send(sock, (char*)&data, sizeof(data), 0);
+	retval = send(sock, (char*)&data, 52, 0);
 	if (retval == SOCKET_ERROR) {
 		err_display("send()");
 		return;
@@ -13,11 +13,11 @@ void sendPlayerLeave(SOCKET sock, Leave data)
 
 }
 
-PlayerInfoScene recvPlayerLeave(SOCKET sock)
+Leave recvPlayerLeave(SOCKET sock)
 {
 	int retval;
-	PlayerInfoScene data;
-	retval = recv(sock, (char*)&data, sizeof(data), 0);
+	Leave data;
+	retval = recv(sock, (char*)&data, 52, 0);
 	
 
 	return data;
